@@ -4,7 +4,22 @@
 # Does not do anything right now
 # pending argument: all
 
-import fraction
+import integer
+from fraction import frac
 import dec2frac
 
-exit
+def test():
+    funcs = [
+        testFrac,
+    ]
+    sum([func() for func in funcs])
+
+def testFrac():
+    ans = True
+    f = frac()
+    f.input(1, 2)
+    ans ^= '(1)/(2)' == str(f)
+    return ans
+
+
+if '__main__' == __name__: exit(test())
