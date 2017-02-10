@@ -4,24 +4,28 @@
 from re import match
 from integer import integer
 
+# Debugging Tools
 import pdb
 t = pdb.set_trace
 
 class frac:
-    def __init__(self, init = None):
+    def __init__(self, value = None):
         # Conversion init
         try:
-            if init is not None:
-                tpe = type(init)
+            if value is not None:
+                # check if value is of primative types such as int
+                tpe = type(value)
                 builtins = [
                     int,
                     float,
                     str,
                 ]
-                if int == tpe: self.input(init, 1)
+                # Deal with currently supported types, others raise exception
+                if int == tpe: self.input(value, 1)
                 elif tpe in builtins: raise NotImplementedError
-                elif '__frac__' not in dir(init): raise TypeError
-                else: self.input(*init.__frac__().numDen())
+                # then check if __integer__ available
+                elif '__frac__' not in dir(value): raise TypeError
+                else: self.input(*value.__frac__().output())
                 return
         except: print('Placeholder error messege')
         # Default init
@@ -29,7 +33,7 @@ class frac:
     def __frac__(self):
         'Conversion support frac -> frac'
         return self
-    def numDen(self):
+    def output(self):
         'Return a tuple consisting of both the numerator and the denominator'
         return self.numer, self.denom 
     def input(self, numer, denom):
@@ -58,14 +62,17 @@ class frac:
     def str(self):
         'Needs more work here, get the string version of fraction'
         # Needs to remove parentheses in unnecessary cases
-        return '(%s)/(%s)' % self.numDen()
+        return '(%s)/(%s)' % self.output()
     def inv(self):
         'Inverse the fraction FLAG: LIMIT'
         _zeroCheck(self, 'Cannot invert 0.')
-        return frac().input(*(self.numDen()[::-1]))
+        return frac().input(*(self.output()[::-1]))
     def sign(self):
-        'Return a bool of the sign, with the understanding that 0 => pos FLAG: EXPR-NON-COMPATIBLE'
-        return (integer(self.numer) * self.denom).sign()
+        'Return a bool of the sign, with the understanding that 0 => pos FLAG: NON-EXPR-COMPATIBLE'
+        return sign(self)
+    def __sign__(self):
+        'add support for global sign()'
+        return sign(integer(self.numer) * self.denom)
     def __str__(self):
         'built-in str() support for frac'
         return self.str()
@@ -86,7 +93,7 @@ class frac:
         # temp vars
         o = frac(other)
         a, b, c, d = [
-            integer(e) for e in self.numDen() + o.numDen()
+            integer(e) for e in self.output() + o.output()
         ]
         # Return result
         # a/b + c/d = (ad+bc)/(bd)
@@ -106,7 +113,7 @@ class frac:
         # temp vars
         o = frac(other)
         a, b, c, d = [
-            integer(e) for e in self.numDen() + o.numDen()
+            integer(e) for e in self.output() + o.output()
         ]
         # Return result
         # a/b * c/d = (ac)/(bd)
@@ -134,7 +141,7 @@ class frac:
         _numCheck(other)
         _zeroCheck(other, 'Cannot divide by 0')
         return self - other * (self // other)
-    # Equality Check
+    ## Conparison Operators
     def __eq__(self, other):
         'built-in A==B support for frac'
         # First known that 'self' is of type frac
@@ -142,7 +149,7 @@ class frac:
         _numCheck(other)
         selfSim = self.simplify()
         otherSim = frac(other).simplify()
-        return selfSim.numDen() == otherSim.numDen()
+        return selfSim.output() == otherSim.output()
     def __ne__(self, other):
         'built-in A!=B support for frac'
         # First known that 'self' is of type frac
@@ -156,7 +163,7 @@ class frac:
         if ss != so: return ss > so
         if ss < 0: return -self < -other
         a, b, c, d = [
-            integer(e) for e in self.numDen() + other.numDen()
+            integer(e) for e in self.output() + other.output()
         ]
         return abs(a * d) > abs(b * c)
     def __ge__(self, other):
@@ -217,8 +224,12 @@ def _numCheck(num):
 def _zeroCheck(num, messege = ''):
     'A fast way of checking if a number is 0'
     if _isZero(num): raise ValueError(messege)
+
+DEFAULT_TYPE = integer # the default type of numerator and denominator, NOT IMPLEMENTED YET
+_THIS_CLASS = frac
+
 # IF USING THE TEST AREA
-testing = True
+testing = False
 
 if testing:
     # TEST AREA
