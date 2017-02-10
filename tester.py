@@ -4,7 +4,9 @@
 # Does not do anything right now
 # pending argument: all
 
-import integer
+from globalFunc import *
+
+from integer import integer
 from fraction import frac
 import dec2frac
 
@@ -12,7 +14,7 @@ def test():
     funcs = [
         testFrac,
     ]
-    sum([func() for func in funcs])
+    return sum([func() for func in funcs])
 
 def testFrac():
     ans = True
@@ -22,4 +24,4 @@ def testFrac():
     return ans
 
 
-if '__main__' == __name__: exit(test())
+if '__main__' == __name__: print(test())
