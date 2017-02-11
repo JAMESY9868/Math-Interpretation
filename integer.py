@@ -166,5 +166,5 @@ if testing:
         i1 / i2 if 4 == mode else
         i1 % i2
     )
-    print('%s %s %s = %s'%(i1, '+-*/%'[mode - 1], i2, i))
+    '%s %s %s = %s'%(i1, '+-*/%'[mode - 1], i2, i)
 pass
