@@ -8,7 +8,9 @@ from globalFunc import *
 
 from integer import integer
 from fraction import frac
+from decimal import decimal
 import dec2frac
+import cli
 
 def test():
     funcs = [
