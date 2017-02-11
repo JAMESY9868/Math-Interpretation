@@ -10,26 +10,24 @@ t = pdb.set_trace
 
 class frac:
     def __init__(self, value = None):
-        # Conversion init
-        try:
-            if value is not None:
-                # check if value is of primative types such as int
-                tpe = type(value)
-                builtins = [
-                    int,
-                    float,
-                    str,
-                ]
-                # Deal with currently supported types, others raise exception
-                if int == tpe: self.input(value, 1)
-                elif tpe in builtins: raise NotImplementedError
-                # then check if __integer__ available
-                elif '__frac__' not in dir(value): raise TypeError
-                else: self.input(*value.__frac__().output())
-                return
-        except: print('Placeholder error messege')
-        # Default init
+        # Default value
         self.input(0, 1)
+        # Conversion init
+        if value is not None:
+            # check if value is of primative types such as int
+            tpe = type(value)
+            builtins = [
+                int,
+                float,
+                str,
+            ]
+            # Deal with currently supported types, others raise exception
+            if int == tpe: self.input(value, 1)
+            elif tpe in builtins: raise NotImplementedError
+            # then check if __integer__ available
+            elif '__frac__' not in dir(value): raise TypeError
+            else: self.input(*value.__frac__().output())
+            return
     def __frac__(self):
         'Conversion support frac -> frac'
         return self

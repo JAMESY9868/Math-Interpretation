@@ -16,28 +16,25 @@ class integer:
     .value: int
     '''
     def __init__(self, value = None):
-        if value is not None:
-        # Conversion init
-            try:
-                tpe = type(value)
-                # check if value is of primative types such as int, str
-                builtins = [
-                    int,
-                    float,
-                    str,
-                ]
-                # Deal with currently supported types, others raise exception
-                if int == tpe: self.input(value)
-                elif str == tpe: self.input(int(value))
-                elif tpe in builtins: raise NotImplementedError
-                # then check if __integer__ available
-                elif '__integer__' not in dir(value): raise TypeError
-                else: self.input(value.__integer__().value)
-                return
-            except:
-                print('Placeholder error messege')
         # Default init
         self.value = 0
+        # Conversion init
+        if value is not None:
+            tpe = type(value)
+            # check if value is of primative types such as int, str
+            builtins = [
+                int,
+                float,
+                str,
+            ]
+            # Deal with currently supported types, others raise exception
+            if int == tpe: self.input(value)
+            elif str == tpe: self.input(int(value))
+            elif tpe in builtins: raise NotImplementedError
+            # then check if __integer__ available
+            elif '__integer__' not in dir(value): raise TypeError
+            else: self.input(value.__integer__().value)
+            return
     def __integer__(self):
         'support for integer constructor'
         return self
