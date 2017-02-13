@@ -47,7 +47,7 @@ class decimal:
                 intDec = value.split('.')
                 if len(intDec) < 2: self.input((intDec[0]),); return
                 finInf = intDec[1].split('_')
-                self.input(intDec) if len(finInf) < 2 else self.input((intDec[0], *finInf))
+                self.input(intDec) if len(finInf) < 2 else self.input([intDec[0]] + finInf)
             elif tpe in builtins: raise NotImplementedError
             elif ifIterable(value):
                 intCheck(value[0])
