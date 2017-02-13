@@ -6,24 +6,48 @@
 
 from globalFunc import *
 
-from integer import integer
-from fraction import frac
-from decimal import decimal
+from integer import *
+from fraction import *
+from decimal import *
 import dec2frac
 import cli
 
 def test():
     funcs = [
+        testInt,
         testFrac,
     ]
-    return sum([func() for func in funcs])
+    return [(print(func.__name__), func()) for func in funcs]
+
+def testInt():
+    _comboTest(i1, i2)
 
 def testFrac():
-    ans = True
-    f = frac()
-    f.input(1, 2)
-    ans ^= '(1)/(2)' == str(f)
-    return ans
+    _comboTest(f1, f2)
 
+def _arithmeticTest(first, second):
+    'Use all six arithmetic operations to test'
+    print('%s + %s = %s' % (first, second, first + second))
+    print('%s - %s = %s' % (first, second, first - second))
+    print('%s * %s = %s' % (first, second, first * second))
+    print('%s / %s = %s' % (first, second, first / second))
+    print('%s // %s = %s' % (first, second, first // second))
+    print('%s %% %s = %s' % (first, second, first % second))
 
+def _comparisonTest(first, second):
+    'Use all six comparison operations to test'
+    print('%s == %s: %s' % (first, second, first == second))
+    print('%s != %s: %s' % (first, second, first != second))
+    print('%s < %s: %s' % (first, second, first < second))
+    print('%s <= %s: %s' % (first, second, first <= second))
+    print('%s > %s: %s' % (first, second, first > second))
+    print('%s >= %s: %s' % (first, second, first >= second))
+
+def _comboTest(first, second):
+    'Use both arithmetic and comparion test'
+    _arithmeticTest(first, second)
+    _comparisonTest(first, second)
+    
+
+# Test operation starts
 if '__main__' == __name__: print(test())
