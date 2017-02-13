@@ -1,12 +1,38 @@
 #!/usr/bin/python3
 # -*- encoding: utf8 -*-
 
+from globalFunc import *
+from validation import *
+
+from integer import *
+from gcd import gcd
+
 from re import match
-from integer import integer
 
 # Debugging Tools
 import pdb
 t = pdb.set_trace
+
+# Supplement of definition for integer class
+def _integerCheck(arg):
+    'To check if a supplement for integer is run as supposed to'
+    if not isinstance(arg, integer): raise TypeError(
+        'This function is meant to supplement integer\'s true division function'
+    )
+def _intTrueDiv(self, other):
+    'A fraction definition of integer trueDiv'
+    _integerCheck(self)
+    if self % other == 0: return self // other
+    return frac(self) / frac(other)
+def _intFrac(self):
+    'fraction conversion for integer'
+    _integerCheck(self)
+    return frac((self, 1))
+    
+integer.__truediv__ = _intTrueDiv
+integer.__frac__ = _intFrac
+
+_DEFAULT_TYPE = integer # the default type of numerator and denominator
 
 class frac:
     def __init__(self, value = None):
@@ -24,6 +50,10 @@ class frac:
             # Deal with currently supported types, others raise exception
             if int == tpe: self.input(value, 1)
             elif tpe in builtins: raise NotImplementedError
+            # Check if a list-like
+            elif ifIterable(value):
+                if len(value) < 2: raise ValueError
+                self.input(*(value[:2]))
             # then check if __integer__ available
             elif '__frac__' not in dir(value): raise TypeError
             else: self.input(*value.__frac__().output())
@@ -45,25 +75,27 @@ class frac:
         if not (_isNum(numer) or _isNum(denom)): raise TypeError(
                 'The arguments provided cannot be interpreted as numbers. Please try other combinations.'
         )
-        if _isZero(denom): raise ValueError(
+        zeroCheck(
             'The denominator cannot be 0. Please try other values. '
         )
         # Assignment section
-        self.numer = str(numer)
-        self.denom = str(denom)
+        self.numer = integer(numer)
+        self.denom = integer(denom)
         # Return self
         return self
     def simplify(self):
         'Simplify the fraction'
-        # Not yet implemented
-        return self
+        if 0 == self.numer: return self.inputRaw(0, 1)
+        sgn_ = sign(self.numer) * sign(self.denom)
+        gcd_ = gcd(self.numer, self.denom)
+        return self.inputRaw(sgn_ * abs(self.numer) / gcd_, abs(self.denom) / gcd_)
     def str(self):
         'Needs more work here, get the string version of fraction'
         # Needs to remove parentheses in unnecessary cases
         return '(%s)/(%s)' % self.output()
     def inv(self):
         'Inverse the fraction FLAG: LIMIT'
-        _zeroCheck(self, 'Cannot invert 0.')
+        zeroCheck(self, 'Cannot invert 0.')
         return frac().input(*(self.output()[::-1]))
     def sign(self):
         'Return a bool of the sign, with the understanding that 0 => pos FLAG: NON-EXPR-COMPATIBLE'
@@ -74,6 +106,9 @@ class frac:
     def __str__(self):
         'built-in str() support for frac'
         return self.str()
+    def __repr__(self):
+        'built-in repr() support for frac'
+        return str(self)
     def __abs__(self):
         'built-in abs() support for frac'
         return -self if self.sign() < 0 else self
@@ -129,7 +164,7 @@ class frac:
         # Then ensure that 'other' is a number
         _numCheck(other)
         # Return result
-        _zeroCheck(other, 'Cannot divide by 0')
+        zeroCheck(other, 'Cannot divide by 0')
         o = frac(other)
         return self * o.inv()
     def __mod__(self, other):
@@ -137,7 +172,7 @@ class frac:
         # First known that 'self' is of type frac
         # Then ensure that 'other' is a number
         _numCheck(other)
-        _zeroCheck(other, 'Cannot divide by 0')
+        zeroCheck(other, 'Cannot divide by 0')
         return self - other * (self // other)
     ## Conparison Operators
     def __eq__(self, other):
@@ -200,40 +235,19 @@ def _isNum(num):
             return False
     return True
 
-def _isZero(arg):
-    'integer section needs changed'
-    tpe = type(arg)
-    if tpe in [
-        int, float,
-    ]:
-        return arg == 0
-    elif tpe == str:
-        return not [i for i in arg if i != '0']
-    elif tpe == frac:
-        return _isZero(arg.numer)
-    elif tpe == integer:
-        return _isZero(arg.value)
-    else:
-        raise NotImplementedError
-
 def _numCheck(num):
     'A fast way of checking if an input is a number'
     if not _isNum(num): raise TypeError
-def _zeroCheck(num, messege = ''):
-    'A fast way of checking if a number is 0'
-    if _isZero(num): raise ValueError(messege)
-
-DEFAULT_TYPE = integer # the default type of numerator and denominator, NOT IMPLEMENTED YET
-_THIS_CLASS = frac
 
 # IF USING THE TEST AREA
-testing = False
+_testing = False
 
-if testing:
-    # TEST AREA
-    f1 = frac().input(1, 8)
-    f2 = frac().input(3, 4)
-    mode = 5 # subtraction
+# TEST AREA
+f1 = frac().input(1, 8)
+f2 = frac().input(3, 4)
+mode = 5 # subtraction
+
+if _testing:
     f = (
         f1 + f2 if 1 == mode else
         f1 - f2 if 2 == mode else

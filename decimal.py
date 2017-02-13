@@ -1,10 +1,14 @@
 #!/usr/bin/python3
 # -*- encoding: utf8 -*-
 
-from fraction import frac
-from integer import integer, _intCheck
-from collections import Iterable
+from globalFunc import *
+from validation import *
+
+from integer import *
+from fraction import *
 from re import match
+
+_DEFAULT_TYPE = (integer, str, str)
 
 class decimal:
     def __init__(self, value = None):
@@ -46,9 +50,9 @@ class decimal:
                 self.input(intDec) if len(finInf) < 2 else self.input((intDec[0], *finInf))
             elif tpe in builtins: raise NotImplementedError
             elif ifIterable(value):
-                _intCheck(value[0])
-                if len(value) > 2: _strNumCheck(value[2])
-                if len(value) > 1: _strNumCheck(value[1])
+                intCheck(value[0])
+                if len(value) > 2: numLiteralCheck(value[2])
+                if len(value) > 1: numLiteralCheck(value[1])
             elif '__decimal__' not in dir(value): raise TypeError
             else: self.input(value.__decimal__().value)
             return
@@ -84,7 +88,7 @@ class decimal:
         6. int, float
         '''
         if ifIterable(value):
-            checkFunc = [_intCheck, _strNumCheck, _strNumCheck] # both functions raise exceptions when req not met
+            checkFunc = [intCheck, numLiteralCheck, numLiteralCheck] # both functions raise exceptions when req not met
             [func(arg) for arg, func in zip(value, checkFunc)]
             l = len(value)
             if l > 2: self.infDec = value[2]
@@ -108,15 +112,33 @@ class decimal:
                 if self.infDec else ''
             )
         )
-def ifIterable(arg):
-    'Checks if an item is Iterable'
-    return isinstance(arg, Iterable)
-
-def _strNumCheck(arg):
-    'Checks if an item is a string representation of a number'
-    expression = '^\d*$'
-    if str != type(arg): raise TypeError
-    if not match(expression, arg): raise ValueError
-
-_DEFAULT_TYPE = (integer, str, str)
-_THIS_CLASS = decimal
+    def sign(self):
+        'sign of decimal'
+        pass
+    def __sign__(self):
+        'globalFunc sign function support'
+        return decimal(
+            1 if self > 0 else
+            -1 if self < 0 else
+            0
+        )
+    # Arithmetic Operators
+    # Conparison Operators -- common idea: change to fraction
+    def __eq__(self, ohter):
+        'built-in support of A==B'
+        return frac(self) == frac(other)
+    def __ne__(self, other):
+        'built-in support of A!=B'
+        return not (self == other)
+    def __gt__(self, other):
+        'built-in support of A>B'
+        return frac(self) > frac(other)
+    def __ge__(self, other):
+        'built-in support of A>=B'
+        return not (self < other)
+    def __lt__(self, other):
+        'built-in support of A<B'
+        return NotImplemented # call __gt__
+    def __le__(self, other):
+        'built-in support of A<=B'
+        return NotImplemented # call __ge__

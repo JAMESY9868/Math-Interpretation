@@ -1,15 +1,20 @@
 #!/usr/bin/python3
 # -*- encoding: utf8 -*-
 
-'''
-Current idea is to use an int to represent the number
-with customized methods connecting to other objects
-'''
+#
+# Current idea is to use an int to represent the number
+# with customized methods connecting to other objects
+#
+
+from globalFunc import *
+
 from re import match
 
 # Debugging Tools
 import pdb
 t = pdb.set_trace
+
+_DEFAULT_TYPE = int # the default type of value held inside the class
 
 class integer:
     '''
@@ -43,7 +48,7 @@ class integer:
         return self.value
     def input(self, value):
         'the input function for integer'
-        if DEFAULT_TYPE != type(value): return self.input(_THIS_CLASS(value).output())
+        if _DEFAULT_TYPE != type(value): return self.input(integer(value).output())
         self.value = value
         return self
     def setValue(self, value):
@@ -56,6 +61,16 @@ class integer:
         # placeholder for dealing with this number
         self.value = int(self.value)
         return self
+    def __frac__(self):
+        'support for frac'
+        raise NotImplementedError(
+            'Needs to import fraction module'
+        )
+    def __decimal__(self):
+        'support for decimal'
+        raise NotImplementedError(
+            'Needs to import decimal module'
+        )
     def sign(self):
         'sign of integer'
         return sign(self)
@@ -78,7 +93,7 @@ class integer:
         return str(self)
     def __abs__(self):
         'built-in abs support for integer'
-        return abs(self.value)
+        return integer(abs(self.value))
     def __neg__(self):
         'built-in -A support for integer'
         # placeholder
@@ -98,15 +113,17 @@ class integer:
     def __floordiv__(self, other):
         'built-in A//B support for integer'
         o = integer(other) # thus filter out weird inputs
-        return self.value // o.value
+        return integer(self.value // o.value)
     def __truediv__(self, other):
         'built-in A/B support for integer'
-        o = integer(other) # thus filter out weird inputs
-        return self.value / o.value
+        if self % other == 0: return self // other
+        raise NotImplementedError(
+            'Needs to import fraction module'
+        )
     def __mod__(self, other):
         'built-in A%B support for integer'
         o = integer(other) # thus filter out weird inputs
-        return self.value % o.value
+        return self - o * (self // o)
     ## Conparison Operators
     def __eq__(self, other):
         'built-in A==B suppport for integer'
@@ -133,32 +150,15 @@ class integer:
         return NotImplemented # force redirect
 pass # placeholder, no purpose
 
-def _isInt(num):
-    types = [
-        int,
-        str,
-        integer,
-    ]
-    if type(num) not in types: return False
-    expression = '^-?\d+$'
-    if str == type(num):
-        if not match(expression, num): return False
-    return True
-
-def _intCheck(num):
-    if not _isInt(num): raise TypeError
-
-DEFAULT_TYPE = int # the default type of value
-_THIS_CLASS = integer # this class
-
 # IF USING THE TEST AREA
-testing = True
+_testing = True
 
-if testing:
-    # TEST AREA
-    i1 = integer(2)
-    i2 = integer(3)
-    mode = 3
+# TEST AREA
+i1 = integer(2)
+i2 = integer(3)
+mode = 3
+
+if _testing:
     i = (
         i1 + i2 if 1 == mode else
         i1 - i2 if 2 == mode else
