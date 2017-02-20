@@ -8,6 +8,7 @@ from integer import *
 from gcd import gcd
 
 from re import match
+import mathRegex as mr
 
 # Debugging Tools
 import pdb
@@ -55,7 +56,7 @@ class frac:
                 if len(value) < 2: raise ValueError
                 self.input(*(value[:2]))
             # then check if __integer__ available
-            elif '__frac__' not in dir(value): raise TypeError
+            elif not hasattr(value, '__frac__'): raise TypeError
             else: self.input(*value.__frac__().output())
             return
     def __frac__(self):
@@ -89,9 +90,14 @@ class frac:
         sgn_ = sign(self.numer) * sign(self.denom)
         gcd_ = gcd(self.numer, self.denom)
         return self.inputRaw(sgn_ * abs(self.numer) / gcd_, abs(self.denom) / gcd_)
+    def copy(self, other):
+        'Copy function'
+        # strict fraction type
+        if type(self) != frac != type(other): raise TypeError
+        return self.input(*other.output())
     def str(self):
-        'Needs more work here, get the string version of fraction'
-        # Needs to remove parentheses in unnecessary cases
+        'get the string version of fraction'
+        # TODO: remove parentheses in unnecessary cases
         return '(%s)/(%s)' % self.output()
     def inv(self):
         'Inverse the fraction FLAG: LIMIT'

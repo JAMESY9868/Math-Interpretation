@@ -6,7 +6,9 @@ from validation import *
 
 from integer import *
 from fraction import *
+
 from re import match
+import mathRegex as mr
 
 _DEFAULT_TYPE = (integer, str, str)
 
@@ -42,10 +44,10 @@ class decimal:
             tpe = type(value)
             if tpe == int: self.input((value,))
             elif tpe == str: 
-                expression = '^-?\d*(\d|\.\d*(_\d+)?)$'
+                expression = mr.full(mr.DECIMAL)
                 if not match(expression, value): raise ValueError
                 intDec = value.split('.')
-                if len(intDec) < 2: self.input((intDec[0]),); return
+                if len(intDec) < 2: self.input((intDec[0],)); return
                 finInf = intDec[1].split('_')
                 self.input(intDec) if len(finInf) < 2 else self.input([intDec[0]] + finInf)
             elif tpe in builtins: raise NotImplementedError
@@ -53,7 +55,7 @@ class decimal:
                 intCheck(value[0])
                 if len(value) > 2: numLiteralCheck(value[2])
                 if len(value) > 1: numLiteralCheck(value[1])
-            elif '__decimal__' not in dir(value): raise TypeError
+            elif not hasattr(value, '__decimal__'): raise TypeError
             else: self.input(value.__decimal__().value)
             return
     def __decimal__(self):
@@ -95,6 +97,14 @@ class decimal:
             if l > 1: self.finDec = value[1]
             self.integ = value[0]
         else: self.input(_THIS_CLASS(value).output())
+    def copy(self, other):
+        'Copy function'
+        # Strict decimal type
+        if type(self) != decimal != type(other): raise TypeError
+        return self.input(other.output())
+    def __repr__(self):
+        'built-in repr support for decimal'
+        return str(self)
     def str(self):
         'string version'
         return str(self)
@@ -142,3 +152,23 @@ class decimal:
     def __le__(self, other):
         'built-in support of A<=B'
         return NotImplemented # call __ge__
+
+# IF USING THE TEST AREA
+_testing = False
+
+# TEST AREA
+d1 = decimal('1.2_3')
+d2 = decimal('3.3')
+mode = 5 # subtraction
+
+if _testing:
+    d = (
+        d1 + d2 if 1 == mode else
+        d1 - d2 if 2 == mode else
+        d1 * d2 if 3 == mode else
+        d1 / d2 if 4 == mode else
+        d1 % d2
+    )
+    print('(%s) %s (%s) = %s'%(d1, '+-*/%'[mode - 1], d2, d))
+
+pass

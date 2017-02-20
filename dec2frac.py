@@ -4,9 +4,15 @@ from globalFunc import *
 from validation import *
 
 from fraction import *
+
 from re import match
+import mathRegex as mr
 
 from validation import _isZero as isZero
+
+# Debug tool
+import pdb
+t = pdb.set_trace
 
 # NOTE: This is a temporary version of decimal.__frac__
 # which impies the type of strDec as str, 
@@ -18,8 +24,10 @@ def dec2frac(strDec):
     'input str, return frac, finite decimal'
     # Check if is str, and matches the re
     if type(strDec) is not str: raise TypeError
-    expression = '^-?(?=.{2,})\d*\.\d*$' # matches strict decimals (12.3 or 12., not 12; .3 works as well)
+    expression = mr.full(mr.DECIMAL)
     if not match(expression, strDec): raise ValueError
+    # Extract out negative sign
+    if '-' == strDec[0]: return -dec2frac(strDec[1:])
     # Seperate to list
     lstDec = strDec.split('.')
     # case of 1.0, -2.000, 3.
@@ -35,3 +43,6 @@ def dec2frac(strDec):
 def decInf2frac(strDec):
     'input str, return frac, repeating infinite decimal'
     pass
+
+
+dec2frac('-1.2')

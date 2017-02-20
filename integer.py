@@ -37,7 +37,7 @@ class integer:
             elif str == tpe: self.input(int(value))
             elif tpe in builtins: raise NotImplementedError
             # then check if __integer__ available
-            elif '__integer__' not in dir(value): raise TypeError
+            elif not hasattr(value, '__integer__'): raise TypeError
             else: self.input(value.__integer__().value)
             return
     def __integer__(self):
@@ -51,6 +51,11 @@ class integer:
         if _DEFAULT_TYPE != type(value): return self.input(integer(value).output())
         self.value = value
         return self
+    def copy(self, other):
+        'copy function'
+        # strict same type
+        if type(self) != integer != type(other): raise TypeError
+        return self.input(other.output())
     def setValue(self, value):
         raise DeprecationWarning
         raise Exception
@@ -88,6 +93,9 @@ class integer:
         'built-in str support for integer'
         # placeholder
         return str(self.value)
+    def __int__(self):
+        'built-in int support for integer'
+        return self.output()
     def __repr__(self):
         'built-in repr support for integer'
         return str(self)
@@ -150,21 +158,8 @@ class integer:
         return NotImplemented # force redirect
 pass # placeholder, no purpose
 
-# IF USING THE TEST AREA
-_testing = True
-
 # TEST AREA
 i1 = integer(2)
 i2 = integer(3)
 mode = 3
 
-if _testing:
-    i = (
-        i1 + i2 if 1 == mode else
-        i1 - i2 if 2 == mode else
-        i1 * i2 if 3 == mode else
-        i1 / i2 if 4 == mode else
-        i1 % i2
-    )
-    '%s %s %s = %s'%(i1, '+-*/%'[mode - 1], i2, i)
-pass

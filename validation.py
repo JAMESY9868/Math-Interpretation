@@ -3,6 +3,9 @@
 
 from globalFunc import *
 
+from re import match
+import mathRegex as mr
+
 from collections import Iterable
 
 # public section
@@ -33,15 +36,23 @@ def _isZero(arg):
         return not [i for i in arg if i != '0']
     else: return arg == 0
 
-def _isInt(num):
-    types = [
+def _isInt(arg):
+    builtins = [
         int,
+        float,
         str,
-        integer,
     ]
-    if type(num) not in types: return False
-    expression = '^-?\d+$'
-    if str == type(num):
-        if not match(expression, num): return False
-    return True
-
+    tpe = type(arg)
+    expression = (
+        '^' + 
+        mr.PLUS_MINUS + '?' + 
+        mr.INT + 
+        '$'
+    )
+    if tpe is int: return True
+    if tpe is float: return (0 == arg % 1)
+    if tpe is str: return bool(match(expression, arg))
+    if not hasattr(arg, '__int__'): return False
+    try: return int == type(arg.__int__())
+    except: return False
+    

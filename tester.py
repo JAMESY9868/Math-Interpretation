@@ -4,6 +4,8 @@
 # Does not do anything right now
 # pending argument: all
 
+from sys import argv
+
 from globalFunc import *
 
 from integer import *
@@ -47,7 +49,15 @@ def _comboTest(first, second):
     'Use both arithmetic and comparion test'
     _arithmeticTest(first, second)
     _comparisonTest(first, second)
-    
+
+# preparation for parsing command line arguments
+tester = dict(
+    integer = testInt,
+    frac = testFrac
+)
+
+def mainTest():
+    pass
 
 # Test operation starts
 if '__main__' == __name__: print(test())
