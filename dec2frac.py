@@ -42,7 +42,22 @@ def dec2frac(strDec):
     
 def decInf2frac(strDec):
     'input str, return frac, repeating infinite decimal'
-    pass
+    if type(strDec) is not str: raise TypeError
+    expression = mr.full(mr.DECIMAL)
+    if not match(expression, strDec): raise ValueError
+    # Extract out negative sign
+    if '-' == strDec[0]: return -decInf2frac(strDec[1:])
+    # Seperate to list
+    lstDec = strDec.split('.')
+    if '_' not in lstDec[1]: return dec2frac(strDec)
+    finInf = lstDec[1].split('_')
+    if not (isZero(finInf[0]) and isZero(lstDec[0])): return (
+            dec2frac(lstDec[0] + '.' + finInf[0]) + 
+            decInf2frac('._' + finInf[1]) /
+            integer('1' + '0' * len(finInf[0]))
+        )
+    else: return frac((finInf[1], ('9' * len(finInf[1]) + finInf[0])))
 
 
 dec2frac('-1.2')
+decInf2frac('-1.2_3')
