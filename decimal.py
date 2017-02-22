@@ -190,7 +190,7 @@ class decimal:
         return self
     def __neg__(self):
         'built-in support of -A'
-        return decimal((-self.output()[0], *self.output()[1:]))
+        return decimal((-self.output()[0],) + self.output()[1:])
     def __add__(self, other):
         'built-in support of A+B'
         return frac(self) + frac(other)
