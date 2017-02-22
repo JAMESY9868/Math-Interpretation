@@ -11,7 +11,6 @@ from globalFunc import *
 from integer import *
 from fraction import *
 from decimal import *
-import dec2frac
 import cli
 
 def test():
