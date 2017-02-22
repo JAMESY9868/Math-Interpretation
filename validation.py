@@ -10,6 +10,12 @@ from collections import Iterable
 
 # public section
 
+def typeCheck(arg, tpe):
+    'Checks the argument\'s type and raise Error when wrong'
+    if not isinstance(arg, tpe): raise TypeError(
+        'This function is meant to supplement a method for class ' + tpe.__name__
+    )
+
 def zeroCheck(num, messege = ''):
     'A fast way of checking if a number is 0'
     if _isZero(num): raise ValueError(messege)
@@ -43,12 +49,7 @@ def _isInt(arg):
         str,
     ]
     tpe = type(arg)
-    expression = (
-        '^' + 
-        mr.PLUS_MINUS + '?' + 
-        mr.INT + 
-        '$'
-    )
+    expression = mr.full(mr.INT)
     if tpe is int: return True
     if tpe is float: return (0 == arg % 1)
     if tpe is str: return bool(match(expression, arg))
