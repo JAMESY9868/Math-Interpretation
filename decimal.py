@@ -94,7 +94,7 @@ class decimal:
     def __frac__(self):
         'frac conversion support'
         output = self.output()
-        if sign(output[0]) < 0: return -decimal((-output[0], *output[1:])).__frac__()
+        if sign(output[0]) < 0: return -decimal((-output[0],) + output[1:]).__frac__()
         if not isZero(output[2]) and sum([not isZero(e) for e in output[:2]]):
             # if [0] and [1] not both empty, and [2] not empty -- use separation
             return (
