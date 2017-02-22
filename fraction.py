@@ -15,19 +15,15 @@ import pdb
 t = pdb.set_trace
 
 # Supplement of definition for integer class
-def _integerCheck(arg):
-    'To check if a supplement for integer is run as supposed to'
-    if not isinstance(arg, integer): raise TypeError(
-        'This function is meant to supplement integer\'s true division function'
-    )
+integerCheck = lambda arg: typeCheck(arg, integer)
 def _intTrueDiv(self, other):
     'A fraction definition of integer trueDiv'
-    _integerCheck(self)
+    integerCheck(self)
     if self % other == 0: return self // other
     return frac(self) / frac(other)
 def _intFrac(self):
     'fraction conversion for integer'
-    _integerCheck(self)
+    integerCheck(self)
     return frac((self, 1))
     
 integer.__truediv__ = _intTrueDiv
@@ -50,6 +46,11 @@ class frac:
             ]
             # Deal with currently supported types, others raise exception
             if int == tpe: self.input(value, 1)
+            elif str == tpe:
+                if '/' in value: raise NotImplementedError
+                if '.' not in value: self.input(frac((value, 1)))
+                else: self.input(frac(self.__decimal__().input(value))) # this will raise error.
+                return
             elif tpe in builtins: raise NotImplementedError
             # Check if a list-like
             elif ifIterable(value):
@@ -57,11 +58,16 @@ class frac:
                 self.input(*(value[:2]))
             # then check if __integer__ available
             elif not hasattr(value, '__frac__'): raise TypeError
-            else: self.input(*value.__frac__().output())
+            else: self.copy(value.__frac__())
             return
     def __frac__(self):
         'Conversion support frac -> frac'
         return self
+    def __decimal__(self):
+        'support for decimal'
+        raise NotImplementedError(
+            'Needs to import decimal module'
+        )
     def output(self):
         'Return a tuple consisting of both the numerator and the denominator'
         return self.numer, self.denom 
@@ -93,7 +99,7 @@ class frac:
     def copy(self, other):
         'Copy function'
         # strict fraction type
-        if type(self) != frac != type(other): raise TypeError
+        if not (type(self) == frac == type(other)): raise TypeError
         return self.input(*other.output())
     def str(self):
         'get the string version of fraction'
@@ -157,6 +163,9 @@ class frac:
         # Return result
         # a/b * c/d = (ac)/(bd)
         return frac().input(a * c, b * d)
+    def __rmul__(self, other):
+        'built-in A*B alternative support for frac'
+        return self * other
     def __floordiv__(self, other):
         'built-in A//B support for frac, return integer FLAG: EXPR'
         # Placeholder only

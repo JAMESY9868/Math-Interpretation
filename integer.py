@@ -34,7 +34,9 @@ class integer:
             ]
             # Deal with currently supported types, others raise exception
             if int == tpe: self.input(value)
-            elif str == tpe: self.input(int(value))
+            elif str == tpe:
+                if '' == value: self.input(0)
+                else: self.input(int(value))
             elif tpe in builtins: raise NotImplementedError
             # then check if __integer__ available
             elif not hasattr(value, '__integer__'): raise TypeError
@@ -118,6 +120,9 @@ class integer:
         'built-in A*B support for integer'
         o = integer(other) # thus filter out weird inputs
         return integer(self.value * o.value)
+    def __rmul__(self, other):
+        'built-in A*B alternative support for integer'
+        return self * other
     def __floordiv__(self, other):
         'built-in A//B support for integer'
         o = integer(other) # thus filter out weird inputs
