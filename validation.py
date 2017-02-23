@@ -29,7 +29,7 @@ def ifIterable(arg):
 
 def numLiteralCheck(arg):
     'Checks if an item is a numerical literal (including empty)'
-    expression = '^\d*$'
+    expression = '^$|' + mr.full(mr.INT)
     if str != type(arg): raise TypeError
     if not match(expression, arg): raise ValueError
 

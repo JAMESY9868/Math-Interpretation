@@ -83,7 +83,8 @@ class decimal:
             elif ifIterable(value):
                 if len(value) > 2: numLiteralCheck(str(value[2]))
                 if len(value) > 1: numLiteralCheck(str(value[1]))
-                numLiteralCheck(str(value[0]))
+                integ = integer(value[0])
+                numLiteralCheck(str(abs(integ)))
                 self.input(value)
             elif not hasattr(value, '__decimal__'): raise TypeError
             else: self.copy(value.__decimal__())
@@ -236,6 +237,5 @@ class decimal:
         return NotImplemented # call __ge__
 
 # TEST AREA
-d1 = decimal('1.2_3')
-d2 = decimal('3.3')
-mode = 5 # subtraction
+d1 = decimal('1.2_36')
+d2 = decimal('3.3_659')

@@ -17,6 +17,7 @@ def test():
     funcs = [
         testInt,
         testFrac,
+        testDec,
     ]
     return [(print(func.__name__), func()) for func in funcs]
 
@@ -25,6 +26,9 @@ def testInt():
 
 def testFrac():
     _comboTest(f1, f2)
+
+def testDec():
+    _comboTest(d1, d2)
 
 def _arithmeticTest(first, second):
     'Use all six arithmetic operations to test'
