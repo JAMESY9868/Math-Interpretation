@@ -11,6 +11,8 @@ from fraction import *
 from re import match
 import mathRegex as mr
 
+from primePow import *
+
 # Supplement of definition for frac class
 fracCheck = lambda arg: typeCheck(arg, frac)
 def _fracDec(self):
@@ -19,17 +21,24 @@ def _fracDec(self):
     fracCheck(self)
     # Conversion
     outStr = [str(each) for each in self.output()]
-    if sign(self) < 0: return -_fracDec(-self)
+    if sign(self) < 0: return -_fracDec(-self) # turn all negatives into positives
     integ = self // 1
-    if integ > 0: return decimal((integ,)) + decimal(self - integ)
+    if integ > 0: return decimal((integ,)) + decimal(self - integ) # separate integer part and pure decimal part
     if '0' == outStr[0]: return decimal(0)
-    expression = mr.full('10*')
-    # Cannot use decimal arithmetic operations because that would be cross-reference
-    if match(expression, outStr[1]):
-        if len(outStr[0]) < len(outStr[1]): return decimal((
-            0, '0' * (len(outStr[1]) - len(outStr[0]) - 1) + outStr[0]
-        ))
-    raise NotImplementedError
+    #raise NotImplementedError
+    alpha, beta = [primePow(outStr[1], i) for i in (2, 5)] # power of 2 | 5 in the denominator
+    nonRepeatNum = max(alpha, beta) # The non-repeating part of the decimal
+    n_0 = integer(outStr[1]) / integer(2) ** alpha / integer(5) ** beta
+    ind = integer(1)
+    while n_0 > 1:
+        if 1 == (10 ** ind) % n_0: break
+        ind += 1
+    repeatNum = ind
+    newNumer = integer(outStr[0]) * 10 ** (nonRepeatNum + repeatNum)
+    newResult = newNumer // outStr[1]
+    repeating, nonRepeat = divmod(newResult, 10 ** repeatNum)[::-1]
+    return decimal((0, str(nonRepeat), str(repeating)))
+    
 def _intDec(self):
     'decimal conversion for integer'
     # Type Check
@@ -146,8 +155,9 @@ class decimal:
             checkFunc = numLiteralCheck
             [checkFunc(str(arg)) for arg in value]
             l = len(value)
-            if l > 2: self.infDec = value[2]
-            if l > 1: self.finDec = value[1]
+            zeroMatch = lambda x: match(mr.full('0+'), x)
+            if l > 2: self.infDec = value[2] if not zeroMatch(value[2]) else ''
+            if l > 1: self.finDec = value[1] if not (self.infDec == '' and zeroMatch(value[1])) else ''
             self.integ = integer(value[0])
         else: self.input(decimal(value).output())
     def copy(self, other):

@@ -4,8 +4,10 @@
 from integer import integer
 from validation import zeroCheck # Exception if 0
 
+import pdb; t = pdb.set_trace
+
 def gcd(first, second):
-    'Checks if convertible to integer'
+    'Greatest Common Divisor, Checks if convertible to integer'
     return _gcd(abs(integer(first)), abs(integer(second)))
 def _gcd(firstInt, secondInt):
     'Internal Process, assumed non-neg integer type'

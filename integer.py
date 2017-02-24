@@ -112,17 +112,45 @@ class integer:
         'built-in A+B support for integer'
         o = integer(other) # thus filter out weird inputs
         return integer(self.value + o.value)
+    def __radd__(self, other):
+        'built-in alternative A+B support for integer'
+        return self + other
     def __sub__(self, other):
         'built-in A-B support for integer'
         o = integer(other) # thus filter out weird inputs
         return self + -o
+    def __rsub__(self, other):
+        'built-in alternative A-B support for integer'
+        return -self + other
     def __mul__(self, other):
         'built-in A*B support for integer'
         o = integer(other) # thus filter out weird inputs
         return integer(self.value * o.value)
     def __rmul__(self, other):
+        'built-in alternative A*B support for integer'
+        return self * other
+    def __pow__(self, other):
+        'built-in A**B support for integer'
+        tpe = type(other)
+        if integer == tpe: return integer(self.output() ** other.output())
+        builtins = [
+            int,
+            str,
+        ]
+        if type(other) not in builtins:
+            if 0 != other % 1: return NotImplemented
+        return self ** integer(other)
+    
+    def __rpow__(self, other):
+        'builtin alternative A**B support for integer'
+        return integer(other) ** self
+    
+    def __rmul__(self, other):
         'built-in A*B alternative support for integer'
         return self * other
+    def __divmod__(self, other):
+        'built-in divmod support for integer'
+        return self // other, self % other
     def __floordiv__(self, other):
         'built-in A//B support for integer'
         o = integer(other) # thus filter out weird inputs
