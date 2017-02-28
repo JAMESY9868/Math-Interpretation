@@ -8,6 +8,11 @@ import mathRegex as mr
 
 from collections import Iterable
 
+# Debugging Tools
+import pdb
+t = pdb.set_trace
+t = lambda: None
+
 # public section
 
 def typeCheck(arg, tpe):

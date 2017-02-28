@@ -7,19 +7,13 @@
 #
 
 from globalFunc import *
+from validation import *
 
 from re import match
-
-# Debugging Tools
-import pdb
-t = pdb.set_trace
 
 _DEFAULT_TYPE = int # the default type of value held inside the class
 
 class integer:
-    '''
-    .value: int
-    '''
     def __init__(self, value = None):
         # Default init
         self.value = 0
@@ -40,7 +34,7 @@ class integer:
             elif tpe in builtins: raise NotImplementedError
             # then check if __integer__ available
             elif not hasattr(value, '__integer__'): raise TypeError
-            else: self.input(value.__integer__().value)
+            else: self.copy(value.__integer__())
             return
     def __integer__(self):
         'support for integer constructor'
@@ -50,24 +44,14 @@ class integer:
         return self.value
     def input(self, value):
         'the input function for integer'
-        if _DEFAULT_TYPE != type(value): return self.input(integer(value).output())
+        if _DEFAULT_TYPE != type(value): return self.copy(integer(other))
         self.value = value
         return self
     def copy(self, other):
         'copy function'
         # strict same type
-        if type(self) != integer != type(other): raise TypeError
+        if not (type(self) == integer == type(other)): raise TypeError
         return self.input(other.output())
-    def setValue(self, value):
-        raise DeprecationWarning
-        raise Exception
-        if not _isInt(value): raise TypeError(
-            'The argument provided cannot be interpreted as an integer. '
-        )
-        self.value = value
-        # placeholder for dealing with this number
-        self.value = int(self.value)
-        return self
     def __frac__(self):
         'support for frac'
         raise NotImplementedError(
@@ -94,7 +78,10 @@ class integer:
     def __str__(self):
         'built-in str support for integer'
         # placeholder
-        return str(self.value)
+        return str(self.output())
+    def __repr__(self):
+        'built-in repr support for integer'
+        return str(self)
     def __int__(self):
         'built-in int support for integer'
         return self.output()

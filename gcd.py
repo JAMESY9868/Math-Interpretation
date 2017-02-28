@@ -17,4 +17,8 @@ def _gcd(firstInt, secondInt):
     if secondInt % firstInt == 0: return firstInt
     return _gcd(secondInt % firstInt, firstInt)
     
+def lcm(first, second):
+    'Least Common Multiplier, Checks if convertibe to integer'
+    return first * second / gcd(first, second)
+
 pass

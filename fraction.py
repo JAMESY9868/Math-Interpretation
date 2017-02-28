@@ -10,10 +10,6 @@ from gcd import gcd
 from re import match
 import mathRegex as mr
 
-# Debugging Tools
-import pdb
-t = pdb.set_trace
-
 # Supplement of definition for integer class
 integerCheck = lambda arg: typeCheck(arg, integer)
 def _intTrueDiv(self, other):

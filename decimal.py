@@ -12,18 +12,20 @@ from re import match
 import mathRegex as mr
 
 from primePow import *
+from gcd import lcm
 
 # Supplement of definition for frac class
 fracCheck = lambda arg: typeCheck(arg, frac)
 def _fracDec(self):
     'decimal conversion for frac'
+    t()
     # Type Check
     fracCheck(self)
+    if sign(self) < 0: return -_fracDec(-self) # turn all negatives into positives
+    integ = self // 1 # separate integer part and pure decimal part
+    self %= 1
     # Conversion
     outStr = [str(each) for each in self.output()]
-    if sign(self) < 0: return -_fracDec(-self) # turn all negatives into positives
-    integ = self // 1
-    if integ > 0: return decimal((integ,)) + decimal(self - integ) # separate integer part and pure decimal part
     if '0' == outStr[0]: return decimal(0)
     #raise NotImplementedError
     alpha, beta = [primePow(outStr[1], i) for i in (2, 5)] # power of 2 | 5 in the denominator
@@ -37,7 +39,13 @@ def _fracDec(self):
     newNumer = integer(outStr[0]) * 10 ** (nonRepeatNum + repeatNum)
     newResult = newNumer // outStr[1]
     repeating, nonRepeat = divmod(newResult, 10 ** repeatNum)[::-1]
-    return decimal((0, str(nonRepeat), str(repeating)))
+    emptyZero = lambda num: '' if (0 == num) else str(num)
+    fillZero = lambda num, count: (
+        (('0' * int(count - len(emptyZero(num)))) if (-1 < count - len(emptyZero(num))) else '') + 
+        emptyZero(num)
+    )
+    t()
+    return decimal((integ, fillZero(nonRepeat, nonRepeatNum), fillZero(repeating, repeatNum)))
     
 def _intDec(self):
     'decimal conversion for integer'
@@ -47,6 +55,7 @@ def _intDec(self):
     return decimal((self,))
     
 frac.__decimal__ = _fracDec
+integer.__decimal__ = _intDec
 
 _DEFAULT_TYPE = (integer, str, str)
 
@@ -155,16 +164,20 @@ class decimal:
             checkFunc = numLiteralCheck
             [checkFunc(str(arg)) for arg in value]
             l = len(value)
-            zeroMatch = lambda x: match(mr.full('0+'), x)
-            if l > 2: self.infDec = value[2] if not zeroMatch(value[2]) else ''
-            if l > 1: self.finDec = value[1] if not (self.infDec == '' and zeroMatch(value[1])) else ''
+            zeroMatch = lambda x: match(mr.full('0+'), str(x))
+            if l > 2: self.infDec = str(value[2]) if not zeroMatch(value[2]) else ''
+            if l > 1: self.finDec = str(value[1]) if not (self.infDec == '' and zeroMatch(value[1])) else ''
             self.integ = integer(value[0])
         else: self.input(decimal(value).output())
+        return self
     def copy(self, other):
         'Copy function'
         # Strict decimal type
         if not (type(self) == decimal == type(other)): raise TypeError
         return self.input(other.output())
+    def simplify(self):
+        'Simplify decimal'
+        return self.input(decimal(frac(self)))
     def __repr__(self):
         'built-in repr support for decimal'
         return str(self)
@@ -204,7 +217,7 @@ class decimal:
         return decimal((-self.output()[0],) + self.output()[1:])
     def __add__(self, other):
         'built-in support of A+B'
-        return frac(self) + frac(other)
+        return decimal(frac(self) + frac(other))
     def __radd__(self, other):
         'built-in alternative support of A+B with B type decimal'
         return self + decimal(other)
