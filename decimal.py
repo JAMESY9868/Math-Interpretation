@@ -18,7 +18,6 @@ from gcd import lcm
 fracCheck = lambda arg: typeCheck(arg, frac)
 def _fracDec(self):
     'decimal conversion for frac'
-    t()
     # Type Check
     fracCheck(self)
     if sign(self) < 0: return -_fracDec(-self) # turn all negatives into positives
@@ -75,9 +74,7 @@ class decimal:
         6. int, float
         '''
         # Fields with default values
-        self.integ = integer(0) # integer part, default type integer
-        self.finDec = '' # finite decimal part, default type str
-        self.infDec = '' # infinite decimal part, default type str
+        self.input((0, '', '')) # Default type: integer, str, str
         # Conversion init
         if value is not None:
             builtins = [
@@ -137,7 +134,7 @@ class decimal:
         
     def __integer__(self):
         'integer conversion support'
-        return integer(self.integ)
+        return integer(self.output()[0])
     def output(self):
         '''
         output a tuple consisting of three parts:
@@ -145,7 +142,7 @@ class decimal:
         2. non-repeating part, type str
         3. repeating part, type str
         '''
-        return (self.integ, self.finDec, self.infDec)
+        return self.integ, self.finDec, self.infDec
     def input(self, value):
         '''
         input for decimal [does not support irregular infinite decimal]:
@@ -187,15 +184,15 @@ class decimal:
     def __str__(self):
         'built-in str support for decimal'
         return (
-            str(self.integ) + # first part
+            str(self.output()[0]) + # first part
             (
-                ('.' + self.finDec) # second part, if with decimal
-                 if self.finDec else
-                '.' if self.infDec else ''
+                ('.' + self.output()[1]) # second part, if with decimal
+                 if self.output()[1] else
+                '.' if self.output()[2] else ''
             ) + 
             (
-                ('_' + self.infDec) # third part, if with repetition
-                if self.infDec else ''
+                ('_' + self.output()[2]) # third part, if with repetition
+                if self.output()[2] else ''
             )
         )
     def sign(self):

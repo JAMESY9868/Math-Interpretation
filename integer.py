@@ -16,7 +16,7 @@ _DEFAULT_TYPE = int # the default type of value held inside the class
 class integer:
     def __init__(self, value = None):
         # Default init
-        self.value = 0
+        self.input(0)
         # Conversion init
         if value is not None:
             tpe = type(value)
@@ -68,8 +68,8 @@ class integer:
     def __sign__(self):
         'add support for global sign()'
         return integer(
-            1 if self.value > 0 else
-            -1 if self.value < 0 else
+            1 if self.output() > 0 else
+            -1 if self.output() < 0 else
             0
         )
     def str(self):
@@ -90,29 +90,26 @@ class integer:
         return str(self)
     def __abs__(self):
         'built-in abs support for integer'
-        return integer(abs(self.value))
+        return integer(abs(self.output()))
     def __neg__(self):
         'built-in -A support for integer'
         # placeholder
-        return integer(-self.value)
+        return integer(-self.output())
     def __add__(self, other):
         'built-in A+B support for integer'
-        o = integer(other) # thus filter out weird inputs
-        return integer(self.value + o.value)
+        return integer(self.output() + other.output())
     def __radd__(self, other):
         'built-in alternative A+B support for integer'
         return self + other
     def __sub__(self, other):
         'built-in A-B support for integer'
-        o = integer(other) # thus filter out weird inputs
-        return self + -o
+        return self + -other
     def __rsub__(self, other):
         'built-in alternative A-B support for integer'
         return -self + other
     def __mul__(self, other):
         'built-in A*B support for integer'
-        o = integer(other) # thus filter out weird inputs
-        return integer(self.value * o.value)
+        return integer(self.output() * o.output())
     def __rmul__(self, other):
         'built-in alternative A*B support for integer'
         return self * other
@@ -141,7 +138,7 @@ class integer:
     def __floordiv__(self, other):
         'built-in A//B support for integer'
         o = integer(other) # thus filter out weird inputs
-        return integer(self.value // o.value)
+        return integer(self.output() // o.output())
     def __truediv__(self, other):
         'built-in A/B support for integer'
         if self % other == 0: return self // other
@@ -155,8 +152,7 @@ class integer:
     ## Conparison Operators
     def __eq__(self, other):
         'built-in A==B suppport for integer'
-        o = integer(other) # thus filter out weird inputs
-        return self.value == o.value
+        return self.output() == other.output()
     def __ne__(self, other):
         'built-in A!=B support for integer'
         o = integer(other) # thus filter out weird inputs
@@ -164,7 +160,7 @@ class integer:
     def __gt__(self, other):
         'built-in A>B support for integer'
         o = integer(other) # thus filter out weird inputs
-        return self.value > o.value
+        return self.output() > o.output()
     def __ge__(self, other):
         'built-in A>=B support for integer'
         return not (self < other)
@@ -181,5 +177,3 @@ pass # placeholder, no purpose
 # TEST AREA
 i1 = integer(2)
 i2 = integer(3)
-mode = 3
-

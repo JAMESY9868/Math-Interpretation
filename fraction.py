@@ -82,16 +82,15 @@ class frac:
             'The denominator cannot be 0. Please try other values. '
         )
         # Assignment section
-        self.numer = integer(numer)
-        self.denom = integer(denom)
+        self.numer, self.denom = [integer(i) for i in (numer, denom)]
         # Return self
         return self
     def simplify(self):
         'Simplify the fraction'
-        if 0 == self.numer: return self.inputRaw(0, 1)
-        sgn_ = sign(self.numer) * sign(self.denom)
-        gcd_ = gcd(self.numer, self.denom)
-        return self.inputRaw(sgn_ * abs(self.numer) / gcd_, abs(self.denom) / gcd_)
+        if 0 == self.output()[0]: return self.inputRaw(0, 1)
+        sgn_ = sign(self.output()[0]) * sign(self.output()[1])
+        gcd_ = gcd(self.output()[0], self.output()[1])
+        return self.inputRaw(sgn_ * abs(self.output()[0]) / gcd_, abs(self.output()[1]) / gcd_)
     def copy(self, other):
         'Copy function'
         # strict fraction type
@@ -110,7 +109,7 @@ class frac:
         return sign(self)
     def __sign__(self):
         'add support for global sign()'
-        return sign(integer(self.numer) * self.denom)
+        return sign(integer(self.output()[0]) * self.output()[1])
     def __str__(self):
         'built-in str() support for frac'
         return self.str()
@@ -125,7 +124,7 @@ class frac:
         return self
     def __neg__(self):
         'built-in -A support for frac'
-        return frac().input(-integer(self.numer), self.denom)
+        return frac().input(-integer(self.output()[0]), self.output()[1])
     def __add__(self, other):
         'built-in A+B support for frac'
         # First known that 'self' is of type frac
@@ -168,7 +167,7 @@ class frac:
         trueDiv = self / other
         if trueDiv < 0: return -(-trueDiv) // 1 - 1
         elif trueDiv == 0: return integer(0)
-        return integer(trueDiv.numer) // trueDiv.denom
+        return integer(trueDiv.output()[0]) // trueDiv.output()[1]
     def __truediv__(self, other):
         'built-in A/B support for frac FLAG: LIMIT'
         # First known that 'self' is of type frac
