@@ -20,7 +20,19 @@ COMPLEX = ( # /^[+-]?\d*(\d|\.\d+)([ij]?|[+-]\d*(\d|\.\d+)[ij])?$/
     IJ + ')?'
 )
 
-def full(regex):
+def half(regex, ifLeft, unsigned = False):
+    '''
+    When ifLeft == True:
+        setting unsigned to True means add no PLUS_MINUS before the regex.
+    Otherwise the argument unsigned does nothing.
+    '''
     return (
-        '^' + PLUS_MINUS + '?' + regex + '$'
+        (
+            '^' +
+            ('' if unsigned else (PLUS_MINUS + '*')) +
+            regex
+        ) if ifLeft else
+        (regex + '$')
     )
+def full(regex, unsigned = False):
+    return half(half(regex, True, unsigned), False) # Equiv to left & right
