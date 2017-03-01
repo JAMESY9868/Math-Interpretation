@@ -12,6 +12,7 @@ from collections import Iterable
 import pdb
 t = pdb.set_trace
 t = lambda: None
+del t
 
 # public section
 
@@ -37,6 +38,11 @@ def numLiteralCheck(arg):
     expression = '^$|' + mr.full(mr.INT)
     if str != type(arg): raise TypeError
     if not match(expression, arg): raise ValueError
+
+def sameType(tpe, *args):
+    'Checks if all args are in the same type given'
+    if type(tpe) != type: raise TypeError('You are not providing a type to compare with. ')
+    return {tpe} == {type(arg) for arg in args}
 
 # private section
 

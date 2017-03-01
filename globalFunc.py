@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 # -*- encoding: utf8 -*-
-import warnings
 
 '''
 Defines the global functions used in MI system
