@@ -40,10 +40,9 @@ def _fracDec(self):
     repeating, nonRepeat = divmod(newResult, 10 ** repeatNum)[::-1]
     emptyZero = lambda num: '' if (0 == num) else str(num)
     fillZero = lambda num, count: (
-        (('0' * int(count - len(emptyZero(num)))) if (-1 < count - len(emptyZero(num))) else '') + 
+        (('0' * integer(count - len(emptyZero(num))).output()) if (-1 < count - len(emptyZero(num))) else '') + 
         emptyZero(num)
     )
-    t()
     return decimal((integ, fillZero(nonRepeat, nonRepeatNum), fillZero(repeating, repeatNum)))
     
 def _intDec(self):
@@ -135,6 +134,7 @@ class decimal:
     def __integer__(self):
         'integer conversion support'
         return integer(self.output()[0])
+    
     def output(self):
         '''
         output a tuple consisting of three parts:
@@ -172,14 +172,13 @@ class decimal:
         # Strict decimal type
         if not (type(self) == decimal == type(other)): raise TypeError
         return self.input(other.output())
+    
     def simplify(self):
         'Simplify decimal'
         return self.input(decimal(frac(self)))
+    
     def __repr__(self):
         'built-in repr support for decimal'
-        return str(self)
-    def str(self):
-        'string version'
         return str(self)
     def __str__(self):
         'built-in str support for decimal'
@@ -195,47 +194,72 @@ class decimal:
                 if self.output()[2] else ''
             )
         )
-    def sign(self):
-        'sign of decimal'
-        pass
     def __sign__(self):
         'globalFunc sign function support'
-        return decimal(
+        return integer(
             1 if self > 0 else
             -1 if self < 0 else
             0
         )
     # Arithmetic Operators -- common idea: change to fraction
+    def __abs__(self):
+        'built-in abs support for decimal'
+        return self if self.output()[0] > 0 else -self
     def __pos__(self):
-        'built-in support of +A'
+        'built-in +A support for decimal'
         return self
     def __neg__(self):
-        'built-in support of -A'
+        'built-in -A support for decimal'
         return decimal((-self.output()[0],) + self.output()[1:])
+    
     def __add__(self, other):
-        'built-in support of A+B'
+        'built-in A+B support for decimal'
         return decimal(frac(self) + frac(other))
     def __radd__(self, other):
-        'built-in alternative support of A+B with B type decimal'
+        'built-in A+B alternative support for decimal'
         return self + decimal(other)
+    
     def __sub__(self, other):
-        'built-in support of A-B'
+        'built-in A-B support for decimal'
         return self + -other
     def __rsub__(self, other):
-        'built-in alternative support of A-B'
+        'built-in A-B alternative support for decimal'
         return self - decimal(other)
+    
     def __mul__(self, other):
-        'built-in support of A*B'
+        'built-in A*B support for decimal'
         return decimal(frac(self) * frac(other))
+    def __rmul__(self, other):
+        'built-in A*B alternative support for decimal'
+        return self * other
+    
     def __floordiv__(self, other):
-        'built-in support of A//B'
+        'built-in A//B support for decimal'
         return decimal(frac(self) // frac(other))
+    def __rfloordiv__(self, other):
+        'built-in A//B alternative support for decimal'
+        return decimal(other) // self
+    
     def __truediv__(self, other):
-        'built-in support of A/B'
+        'built-in A/B support for decimal'
         return decimal(frac(self) / frac(other))
+    def __rtruediv__(self, other):
+        'built-in A/B alternative support for decimal'
+        return decimal(other) / self
+    
     def __mod__(self, other):
-        'built-in support of A%B'
+        'built-in A%B suppoort for decimal'
         return decimal(frac(self) % frac(other))
+    def __rmod__(self, other):
+        'built-in A%B alternative support for decimal'
+        return decimal(other) % self
+    
+    def __divmod__(self, other):
+        'built-in divmod support for decimal'
+        return self // other, self % other
+    def __rdivmod__(self, other):
+        'built-in divmod alternative support for decimal'
+        return divmod(decimal(other), self)
     # Conparison Operators -- common idea: change to fraction
     def __eq__(self, other):
         'built-in support of A==B'

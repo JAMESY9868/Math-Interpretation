@@ -50,8 +50,9 @@ class integer:
     def copy(self, other):
         'copy function'
         # strict same type
-        if not (type(self) == integer == type(other)): raise TypeError
+        if not sameType(integer, self, other): raise TypeError
         return self.input(other.output())
+    
     def __frac__(self):
         'support for frac'
         raise NotImplementedError(
@@ -62,105 +63,110 @@ class integer:
         raise NotImplementedError(
             'Needs to import decimal module'
         )
-    def sign(self):
-        'sign of integer'
-        return sign(self)
-    def __sign__(self):
-        'add support for global sign()'
-        return integer(
-            1 if self.output() > 0 else
-            -1 if self.output() < 0 else
-            0
+    def __comp__(self):
+        'support for comp'
+        raise NotImplementedError(
+            'Needs to import complex module'
         )
-    def str(self):
-        'get the string version of integer'
-        return str(self)
+    
     def __str__(self):
         'built-in str support for integer'
-        # placeholder
         return str(self.output())
     def __repr__(self):
         'built-in repr support for integer'
         return str(self)
-    def __int__(self):
-        'built-in int support for integer'
-        return self.output()
-    def __repr__(self):
-        'built-in repr support for integer'
-        return str(self)
+    
+    def __sign__(self):
+        'add support for global sign()'
+        return 0 if 0 == self else (self // abs(self))
+    
     def __abs__(self):
         'built-in abs support for integer'
         return integer(abs(self.output()))
+    def __pos__(self):
+        'built-in +A support for integer'
+        return self
     def __neg__(self):
         'built-in -A support for integer'
-        # placeholder
         return integer(-self.output())
+    
     def __add__(self, other):
         'built-in A+B support for integer'
-        return integer(self.output() + other.output())
+        if not _operatable(other): return NotImplemented
+        return integer(self.output() + integer(other).output())
     def __radd__(self, other):
         'built-in alternative A+B support for integer'
         return self + other
+    
     def __sub__(self, other):
         'built-in A-B support for integer'
+        if not _operatable(other): return NotImplemented
         return self + -other
     def __rsub__(self, other):
         'built-in alternative A-B support for integer'
         return -self + other
+    
     def __mul__(self, other):
         'built-in A*B support for integer'
-        return integer(self.output() * o.output())
+        if not _operatable(other): return NotImplemented
+        return integer(self.output() * integer(other).output())
     def __rmul__(self, other):
         'built-in alternative A*B support for integer'
         return self * other
+    
+    def __floordiv__(self, other):
+        'built-in A//B support for integer'
+        if not _operatable(other): return NotImplemented
+        return integer(self.output() // integer(other).output())
+    def __rfloordiv__(self, other):
+        'built-in A//B alternative support for integer'
+        return integer(other) // self
+    
+    def __truediv__(self, other):
+        'built-in A/B support for integer'
+        if not _operatable(other): return NotImplemented
+        if self % other == 0: return self // other
+        return self.__frac__() / other # Call frac's division function if frac class is present
+    'built-in A/B alternative support for integer'
+    __rtruediv__ = lambda self, other: NotImplemented
+    
+    def __mod__(self, other):
+        'built-in A%B support for integer'
+        if not _operatable(other): return NotImplemented
+        return integer(self.output() % integer(other).output())
+    def __rmod__(self, other):
+        'built-in A%B alternative support for integer'
+        return integer(other) % self
+    
+    def __divmod__(self, other):
+        'built-in divmod support for integer'
+        if not _operatable(other): return NotImplemented
+        return self // other, self % other
+    def __rdivmod__(self, other):
+        'builtin divmod alternative suppoort for integer'
+        divmod(integer(other), self)
+    
     def __pow__(self, other):
         'built-in A**B support for integer'
-        tpe = type(other)
-        if integer == tpe: return integer(self.output() ** other.output())
-        builtins = [
-            int,
-            str,
-        ]
-        if type(other) not in builtins:
-            if 0 != other % 1: return NotImplemented
-        return self ** integer(other)
-    
+        if not _operatable(other): return NotImplemented
+        if 0 != other % 1: return NotImplemented # for non-integer powers
+        return integer(self.output() ** integer(other).output())
     def __rpow__(self, other):
         'builtin alternative A**B support for integer'
         return integer(other) ** self
     
-    def __rmul__(self, other):
-        'built-in A*B alternative support for integer'
-        return self * other
-    def __divmod__(self, other):
-        'built-in divmod support for integer'
-        return self // other, self % other
-    def __floordiv__(self, other):
-        'built-in A//B support for integer'
-        o = integer(other) # thus filter out weird inputs
-        return integer(self.output() // o.output())
-    def __truediv__(self, other):
-        'built-in A/B support for integer'
-        if self % other == 0: return self // other
-        raise NotImplementedError(
-            'Needs to import fraction module'
-        )
-    def __mod__(self, other):
-        'built-in A%B support for integer'
-        o = integer(other) # thus filter out weird inputs
-        return self - o * (self // o)
     ## Conparison Operators
     def __eq__(self, other):
         'built-in A==B suppport for integer'
-        return self.output() == other.output()
+        if not _operatable(other): return NotImplemented
+        return self.output() == integer(other).output()
     def __ne__(self, other):
         'built-in A!=B support for integer'
-        o = integer(other) # thus filter out weird inputs
         return not (self == other)
     def __gt__(self, other):
         'built-in A>B support for integer'
-        o = integer(other) # thus filter out weird inputs
-        return self.output() > o.output()
+        if not _operatable(other): return NotImplemented
+        return self.output() > integer(other).output()
     def __ge__(self, other):
         'built-in A>=B support for integer'
         return not (self < other)
@@ -172,7 +178,19 @@ class integer:
         'built-in A<=B support for integer'
         if integer != type(other): return self <= integer(other)
         return NotImplemented # force redirect
-pass # placeholder, no purpose
+
+def _operatable(arg):
+    'take the argument itself'
+    tpes = (
+        # Builtin types
+        int,
+        float,
+        str,
+        # MI types
+        integer,
+    )
+    return type(arg) in tpes
+    
 
 # TEST AREA
 i1 = integer(2)

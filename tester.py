@@ -13,7 +13,17 @@ from fraction import *
 from decimal import *
 import cli
 
+import color
+
+extraArg = {
+    'all' : False,
+    'oper' : False,
+}
+
 def test():
+    if 'all' in argv: 
+        extraArg['oper'] = True
+    if 'oper' in argv: extraArg['oper'] = True
     funcs = [
         testInt,
         testFrac,
@@ -38,6 +48,7 @@ def _arithmeticTest(first, second):
     print('%s / %s = %s' % (first, second, first / second))
     print('%s // %s = %s' % (first, second, first // second))
     print('%s %% %s = %s' % (first, second, first % second))
+    print('divmod(%s, %s) = %s, %s' % ((first, second) + divmod(first, second)))
 
 def _comparisonTest(first, second):
     'Use all six comparison operations to test'
@@ -48,16 +59,43 @@ def _comparisonTest(first, second):
     print('%s > %s: %s' % (first, second, first > second))
     print('%s >= %s: %s' % (first, second, first >= second))
 
+def _operatorExistTest(arg):
+    'Checks if all necessary operator wrappers are present'
+    opers = (
+        '__pos__', '__neg__',
+        '__add__', '__radd__',
+        '__sub__', '__rsub__',
+        '__mul__', '__rmul__',
+        '__truediv__', '__rtruediv__',
+        '__floordiv__', '__rfloordiv__',
+        '__mod__', '__rmod__',
+        '__divmod__', '__rdivmod__',
+        '__eq__', '__ne__',
+        '__gt__', '__ge__',
+        '__lt__', '__le__',
+    )
+    missingArg = [
+        oper for oper in opers
+        if not hasattr(arg, oper)
+    ]
+    
+    print(color.color('red').text('Missing operators for type %s: %s' %
+        (type(arg).__name__, missingArg)))
+    if extraArg['oper']: 
+        if len(missingArg) != 0: raise AttributeError
+
 def _comboTest(first, second):
-    'Use both arithmetic and comparion test'
+    'Use all available tests for a certain class'
+    _operatorExistTest(first)
     _arithmeticTest(first, second)
     _comparisonTest(first, second)
 
 # preparation for parsing command line arguments
-tester = dict(
-    integer = testInt,
-    frac = testFrac
-)
+tester = {
+    'integer' : testInt,
+    'frac' : testFrac,
+    'decimal' : testDec,
+}
 
 def mainTest():
     pass

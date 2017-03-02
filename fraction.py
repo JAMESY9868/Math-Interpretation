@@ -30,7 +30,7 @@ _DEFAULT_TYPE = integer # the default type of numerator and denominator
 class frac:
     def __init__(self, value = None):
         # Default value
-        self.input(0, 1)
+        self.input((0, 1))
         # Conversion init
         if value is not None:
             # check if value is of primative types such as int
@@ -41,19 +41,19 @@ class frac:
                 str,
             ]
             # Deal with currently supported types, others raise exception
-            if int == tpe: self.input(value, 1)
+            if int == tpe: self.input((value, 1))
             elif str == tpe:
                 if '/' in value: raise NotImplementedError
-                if '.' not in value: self.input(frac((value, 1)))
-                else: self.input(frac(self.__decimal__().input(value))) # this will raise error.
+                if '.' not in value: self.input(integer(value))
+                else: self.input(self.__decimal__().input(value)) # this will raise error without decimal
                 return
             elif tpe in builtins: raise NotImplementedError
             # Check if a list-like
             elif ifIterable(value):
                 if len(value) < 2: raise ValueError
-                self.input(*(value[:2]))
+                self.input(value[:2])
             # then check if __integer__ available
-            elif not hasattr(value, '__frac__'): raise TypeError
+            elif not hasattr(value, '__frac__'): raise NotImplementedError
             else: self.copy(value.__frac__())
             return
     def __frac__(self):
@@ -61,61 +61,61 @@ class frac:
         return self
     def __decimal__(self):
         'support for decimal'
-        raise NotImplementedError(
-            'Needs to import decimal module'
-        )
+        raise NotImplementedError('Needs to import decimal module')
+    
     def output(self):
         'Return a tuple consisting of both the numerator and the denominator'
         return self.numer, self.denom 
-    def input(self, numer, denom):
+    def input(self, value): # numer, denom
         'Check validity of input set and assign'
-        self.inputRaw(numer, denom)
+        if not ifIterable(value): raise TypeError
+        if len(value) < 2: raise ValueError
+        self.inputRaw(value)
         self.simplify()
         return self
-    def inputRaw(self, numer, denom):
+    def inputRaw(self, value): # numer, denom
         'Check validity of input set and assign'
         # Checking section
-        if not (_isNum(numer) or _isNum(denom)): raise TypeError(
-                'The arguments provided cannot be interpreted as numbers. Please try other combinations.'
-        )
+        if [_isNum(e) for e in value[:2]] != [True] * 2: raise TypeError
         zeroCheck(
+            value[1],
             'The denominator cannot be 0. Please try other values. '
         )
         # Assignment section
-        self.numer, self.denom = [integer(i) for i in (numer, denom)]
+        self.numer, self.denom = [integer(i) for i in value[:2]]
         # Return self
         return self
+    
     def simplify(self):
         'Simplify the fraction'
-        if 0 == self.output()[0]: return self.inputRaw(0, 1)
+        if 0 == self.output()[0]: return self.inputRaw((0, 1))
         sgn_ = sign(self.output()[0]) * sign(self.output()[1])
         gcd_ = gcd(self.output()[0], self.output()[1])
-        return self.inputRaw(sgn_ * abs(self.output()[0]) / gcd_, abs(self.output()[1]) / gcd_)
+        return self.inputRaw((sgn_ * abs(self.output()[0]) / gcd_, abs(self.output()[1]) / gcd_))
+    
     def copy(self, other):
         'Copy function'
         # strict fraction type
-        if not (type(self) == frac == type(other)): raise TypeError
-        return self.input(*other.output())
-    def str(self):
-        'get the string version of fraction'
-        # TODO: remove parentheses in unnecessary cases
-        return '(%s)/(%s)' % self.output()
+        if not (sameType(frac, self, other)): raise TypeError
+        return self.input(other.output())
+    
     def inv(self):
         'Inverse the fraction FLAG: LIMIT'
         zeroCheck(self, 'Cannot invert 0.')
-        return frac().input(*(self.output()[::-1]))
-    def sign(self):
-        'Return a bool of the sign, with the understanding that 0 => pos FLAG: NON-EXPR-COMPATIBLE'
-        return sign(self)
+        return frac(self.output()[::-1])
+    
     def __sign__(self):
         'add support for global sign()'
         return sign(integer(self.output()[0]) * self.output()[1])
+    
     def __str__(self):
         'built-in str() support for frac'
-        return self.str()
+        # TODO: remove parentheses in unnecessary cases
+        return '(%s)/(%s)' % self.output()
     def __repr__(self):
         'built-in repr() support for frac'
         return str(self)
+    
     def __abs__(self):
         'built-in abs() support for frac'
         return -self if self.sign() < 0 else self
@@ -124,66 +124,73 @@ class frac:
         return self
     def __neg__(self):
         'built-in -A support for frac'
-        return frac().input(-integer(self.output()[0]), self.output()[1])
+        return frac((-integer(self.output()[0]), self.output()[1]))
+    
     def __add__(self, other):
         'built-in A+B support for frac'
-        # First known that 'self' is of type frac
-        # Then ensure that 'other' is a number (thus "add-able", same for other basic operations)
-        _numCheck(other)
-        # temp vars
-        o = frac(other)
+        if not _operatable(other): return NotImplemented
         a, b, c, d = [
-            integer(e) for e in self.output() + o.output()
+            integer(e) for e in self.output() + frac(other).output()
         ]
-        # Return result
         # a/b + c/d = (ad+bc)/(bd)
-        return frac().input(a * d + b * c, b * d)
+        return frac((a * d + b * c, b * d))
+    def __radd__(self, other):
+        'built-in A+B alternative support for frac'
+        return self + other
+        
     def __sub__(self, other):
         'built-in A-B support for frac'
-        # First known that 'self' is of type frac
-        # Then ensure that 'other' is a number
-        if not _isNum(other): raise TypeError
+        if not _operatable(other): return NotImplemented
         # Return result
         return self + -other
+    def __rsub__(self, other):
+        'built-in A-B alternative support for frac'
+        return -self + other
+    
     def __mul__(self, other):
         'built-in A*B support for frac'
-        # First known that 'self' is of type frac
-        # Then ensure that 'other' is a number
-        if not _isNum(other): raise TypeError
-        # temp vars
-        o = frac(other)
-        a, b, c, d = [
-            integer(e) for e in self.output() + o.output()
-        ]
-        # Return result
+        if not _operatable(other): return NotImplemented
+        a, b, c, d = self.output() + frac(other).output()
         # a/b * c/d = (ac)/(bd)
-        return frac().input(a * c, b * d)
+        return frac((a * c, b * d))
     def __rmul__(self, other):
         'built-in A*B alternative support for frac'
         return self * other
+    
     def __floordiv__(self, other):
         'built-in A//B support for frac, return integer FLAG: EXPR'
-        # Placeholder only
+        if not _operatable(other): return NotImplemented
         trueDiv = self / other
         if trueDiv < 0: return -(-trueDiv) // 1 - 1
         elif trueDiv == 0: return integer(0)
         return integer(trueDiv.output()[0]) // trueDiv.output()[1]
+    def __rfloordiv__(self, other):
+        'built-in A//B alternative support for frac'
+        return frac(other) // self
+        
     def __truediv__(self, other):
         'built-in A/B support for frac FLAG: LIMIT'
-        # First known that 'self' is of type frac
-        # Then ensure that 'other' is a number
-        _numCheck(other)
-        # Return result
+        if not _operatable(other): return NotImplemented
         zeroCheck(other, 'Cannot divide by 0')
-        o = frac(other)
-        return self * o.inv()
+        return self * frac(other).inv()
+    def __rtruediv__(self, other):
+        'built-in A/B alternative support for frac'
+        return frac(other) / self
+    
     def __mod__(self, other):
         'built-in A%B support for frac FLAG: NO-LIMIT'
-        # First known that 'self' is of type frac
-        # Then ensure that 'other' is a number
-        _numCheck(other)
-        zeroCheck(other, 'Cannot divide by 0')
+        if not _operatable(other): return NotImplemented
         return self - other * (self // other)
+    def __rmod__(self, other):
+        'built-in A%B alternative support for frac'
+        return frac(other) % self
+    
+    def __divmod__(self, other):
+        'built-in divmod support for frac'
+        return self // other, self % other
+    def __rdivmod__(self, other):
+        'built-in divmod alternative support for frac'  
+        return divmod(frac(other), self)
     ## Conparison Operators
     def __eq__(self, other):
         'built-in A==B support for frac'
@@ -202,7 +209,7 @@ class frac:
     def __gt__(self, other):
         'built-in A>B support for frac FLAG: EXPR'
         if type(other) != frac: return self > frac(other)
-        ss, so = [e.sign() for e in (self, other)]
+        ss, so = [sign(e) for e in (self, other)]
         if ss != so: return ss > so
         if ss < 0: return -self < -other
         a, b, c, d = [
@@ -249,22 +256,19 @@ def _numCheck(num):
     'A fast way of checking if an input is a number'
     if not _isNum(num): raise TypeError
 
-# IF USING THE TEST AREA
-_testing = False
+def _operatable(arg):
+    'take the argument itself'
+    tpes = (
+        # Builtin types
+        int,
+        float,
+        str,
+        # MI types
+        integer,
+        frac,
+    )
+    return type(arg) in tpes
 
 # TEST AREA
-f1 = frac().input(1, 8)
-f2 = frac().input(3, 4)
-mode = 5 # subtraction
-
-if _testing:
-    f = (
-        f1 + f2 if 1 == mode else
-        f1 - f2 if 2 == mode else
-        f1 * f2 if 3 == mode else
-        f1 / f2 if 4 == mode else
-        f1 % f2
-    )
-    print('(%s) %s (%s) = %s'%(f1, '+-*/%'[mode - 1], f2, f))
-
-pass
+f1 = frac().input((1, 8))
+f2 = frac().input((3, 4))
