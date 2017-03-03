@@ -89,6 +89,7 @@ def _comboTest(first, second):
     _operatorExistTest(first)
     _arithmeticTest(first, second)
     _comparisonTest(first, second)
+    print()
 
 # preparation for parsing command line arguments
 tester = {

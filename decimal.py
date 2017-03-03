@@ -281,5 +281,5 @@ class decimal:
         return NotImplemented # call __ge__
 
 # TEST AREA
-d1 = decimal('1.2_36')
-d2 = decimal('3.3_659')
+d1 = decimal('1.2_3')
+d2 = decimal('2.34_56')
