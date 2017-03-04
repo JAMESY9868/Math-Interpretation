@@ -73,16 +73,21 @@ class frac:
         self.inputRaw(value)
         self.simplify()
         return self
+    _inputable = ()
     def inputRaw(self, value): # numer, denom
         'Check validity of input set and assign'
         # Checking section
-        if [_isNum(e) for e in value[:2]] != [True] * 2: raise TypeError
+        if not ifIterable(value): raise TypeError
+        if len(value) < 2: raise ValueError
+        value = value[:2]
+        if {_operatable(e) for e in value} != {True}: return NotImplemented
         zeroCheck(
             value[1],
             'The denominator cannot be 0. Please try other values. '
         )
         # Assignment section
-        self.numer, self.denom = [integer(i) for i in value[:2]]
+        if True in [isType(e, self._inputable) for e in value]: return frac(value[0]) / frac(value[1])
+        self.numer, self.denom = [integer(i) for i in value]
         # Return self
         return self
     
@@ -111,7 +116,7 @@ class frac:
     def __str__(self):
         'built-in str() support for frac'
         # TODO: remove parentheses in unnecessary cases
-        return '(%s)/(%s)' % self.output()
+        return '%s/%s' % self.output()
     def __repr__(self):
         'built-in repr() support for frac'
         return str(self)
@@ -194,24 +199,21 @@ class frac:
     ## Conparison Operators
     def __eq__(self, other):
         'built-in A==B support for frac'
-        # First known that 'self' is of type frac
-        # Then ensure that 'other' is a number
-        _numCheck(other)
+        if not _operatable(other): return NotImplemented
         selfSim = self.simplify()
         otherSim = frac(other).simplify()
-        return selfSim.output() == otherSim.output()
+        return self.simplify().output() == frac(other).output()
     def __ne__(self, other):
         'built-in A!=B support for frac'
-        # First known that 'self' is of type frac
-        # Then ensure that 'other' is a number
-        _numCheck(other)
         return not (self == other)
+    
     def __gt__(self, other):
         'built-in A>B support for frac FLAG: EXPR'
+        if not _operatable(other): return NotImplemented
         if type(other) != frac: return self > frac(other)
         ss, so = [sign(e) for e in (self, other)]
-        if ss != so: return ss > so
-        if ss < 0: return -self < -other
+        if ss != so: return ss > so # if different sign, compare directly
+        if ss < 0: return -self < -other # if ss < 0, reverse sign and compare
         a, b, c, d = [
             integer(e) for e in self.output() + other.output()
         ]
@@ -220,6 +222,7 @@ class frac:
         'built-in A>=B support for frac FLAG: EXPR'
         if type(other) != frac: return self >= frac(other)
         return not self < other # load __lt__
+    
     def __lt__(self, other):
         'built-in A<B support for frac FLAG: EXPR'
         if type(other) != frac: return self < frac(other)
@@ -229,32 +232,7 @@ class frac:
         if type(other) != frac: return self <= frac(other)
         return NotImplemented # force to load __ge__
         
-pass # Placed for ease of using the editor, no real purpose
-
-def _isNum(num):
-    '''
-    Checks if the input is of one of the following types
-        int
-        str containing ONLY int
-    return the decision
-    '''
-    types = [
-        int,
-        str,
-        frac,
-        integer,
-    ]
-    if type(num) not in types: return False
-    # check by type
-    strMatch = '^\d*$' # only integers right now
-    if str == type(num):
-        if not match(strMatch, num):
-            return False
-    return True
-
-def _numCheck(num):
-    'A fast way of checking if an input is a number'
-    if not _isNum(num): raise TypeError
+frac._inputable += (frac,)
 
 def _operatable(arg):
     'take the argument itself'
@@ -270,5 +248,5 @@ def _operatable(arg):
     return type(arg) in tpes
 
 # TEST AREA
-f1 = frac().input((1, 8))
-f2 = frac().input((3, 4))
+f1 = frac((1, 8))
+f2 = frac((3, 4))

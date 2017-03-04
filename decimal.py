@@ -25,7 +25,7 @@ def _fracDec(self):
     self %= 1
     # Conversion
     outStr = [str(each) for each in self.output()]
-    if '0' == outStr[0]: return decimal(0)
+    if '0' == outStr[0]: return decimal(integ)
     #raise NotImplementedError
     alpha, beta = [primePow(outStr[1], i) for i in (2, 5)] # power of 2 | 5 in the denominator
     nonRepeatNum = max(alpha, beta) # The non-repeating part of the decimal
@@ -263,23 +263,39 @@ class decimal:
     # Conparison Operators -- common idea: change to fraction
     def __eq__(self, other):
         'built-in support of A==B'
+        if not _operatable(other): return NotImplemented
         return frac(self) == frac(other)
     def __ne__(self, other):
         'built-in support of A!=B'
         return not (self == other)
     def __gt__(self, other):
         'built-in support of A>B'
+        if not _operatable(other): return NotImplemented
         return frac(self) > frac(other)
     def __ge__(self, other):
         'built-in support of A>=B'
         return not (self < other)
     def __lt__(self, other):
         'built-in support of A<B'
+        if type(other) != decimal: return self < decimal(other)
         return NotImplemented # call __gt__
     def __le__(self, other):
         'built-in support of A<=B'
+        if type(other) != decimal: return self <= decimal(other)
         return NotImplemented # call __ge__
+
+def _operatable(arg):
+    'Checks if the argument is operatable'
+    tpes = (
+        int,
+        float,
+        str,
+        integer,
+        frac,
+        decimal,
+    )
+    return type(arg) in tpes
 
 # TEST AREA
 d1 = decimal('1.2_3')
-d2 = decimal('2.34_56')
+d2 = decimal('._3')

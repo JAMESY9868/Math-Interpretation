@@ -11,6 +11,7 @@ from globalFunc import *
 from integer import *
 from fraction import *
 from decimal import *
+from complex import *
 import cli
 
 import color
@@ -20,15 +21,21 @@ extraArg = {
     'oper' : False,
 }
 
+_limited = {
+    'arithmetic' : (comp,),
+    'comparison' : (comp,),
+}
+
 def test():
     if 'all' in argv: 
         extraArg['oper'] = True
     if 'oper' in argv: extraArg['oper'] = True
-    funcs = [
+    funcs = (
         testInt,
         testFrac,
         testDec,
-    ]
+        testComp,
+    )
     return [(print(func.__name__), func()) for func in funcs]
 
 def testInt():
@@ -40,12 +47,18 @@ def testFrac():
 def testDec():
     _comboTest(d1, d2)
 
+def testComp():
+    _comboTest(c1, c2)
+    _comboTest(c1.remode(False), c2.remode(False))
+
 def _arithmeticTest(first, second):
     'Use all six arithmetic operations to test'
     print('%s + %s = %s' % (first, second, first + second))
     print('%s - %s = %s' % (first, second, first - second))
     print('%s * %s = %s' % (first, second, first * second))
     print('%s / %s = %s' % (first, second, first / second))
+    if type(first) in _limited['arithmetic']: return
+    if type(second) in _limited['arithmetic']: return
     print('%s // %s = %s' % (first, second, first // second))
     print('%s %% %s = %s' % (first, second, first % second))
     print('divmod(%s, %s) = %s, %s' % ((first, second) + divmod(first, second)))
@@ -54,6 +67,8 @@ def _comparisonTest(first, second):
     'Use all six comparison operations to test'
     print('%s == %s: %s' % (first, second, first == second))
     print('%s != %s: %s' % (first, second, first != second))
+    if type(first) in _limited['comparison']: return
+    if type(second) in _limited['comparison']: return
     print('%s < %s: %s' % (first, second, first < second))
     print('%s <= %s: %s' % (first, second, first <= second))
     print('%s > %s: %s' % (first, second, first > second))
@@ -96,6 +111,7 @@ tester = {
     'integer' : testInt,
     'frac' : testFrac,
     'decimal' : testDec,
+    'comp' : testComp,
 }
 
 def mainTest():

@@ -10,6 +10,10 @@ def sign(arg):
     if not hasattr(arg, '__sign__'): raise TypeError
     return arg.__sign__()
 
+def signStr(arg, optPlusSign = False):
+    'Gets the sign of the expression with + or -, or if optPlusSign is False (by default), empty string.' 
+    return '-' if sign(arg) < 0 else '+' if optPlusSign else ''
+
 # the following lines simply serve for the ease of typing, and can/should be ignored.
 alternative = 0; del alternative
 support = 0; del support

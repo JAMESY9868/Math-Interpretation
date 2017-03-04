@@ -44,6 +44,11 @@ def sameType(tpe, *args):
     if type(tpe) != type: raise TypeError('You are not providing a type to compare with. ')
     return {tpe} == {type(arg) for arg in args}
 
+def isType(arg, tpes):
+    'Checks if the type of argument is of the type provided in tpes'
+    if not ifIterable(tpes): return NotImplemented if type != type(tpes) else (tpes,)
+    return type(arg) in tpes
+
 # private section
 
 def _isZero(arg):
