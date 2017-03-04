@@ -7,6 +7,7 @@
 from sys import argv
 
 from globalFunc import *
+from validation import *
 
 from integer import *
 from fraction import *
@@ -36,7 +37,7 @@ def test():
         testDec,
         testComp,
     )
-    return [(print(func.__name__), func()) for func in funcs]
+    return [(print(), print(color.color('yellow').text(func.__name__)), func()) for func in funcs]
 
 def testInt():
     _comboTest(i1, i2)
@@ -53,26 +54,32 @@ def testComp():
 
 def _arithmeticTest(first, second):
     'Use all six arithmetic operations to test'
-    print('%s + %s = %s' % (first, second, first + second))
-    print('%s - %s = %s' % (first, second, first - second))
-    print('%s * %s = %s' % (first, second, first * second))
-    print('%s / %s = %s' % (first, second, first / second))
-    if type(first) in _limited['arithmetic']: return
-    if type(second) in _limited['arithmetic']: return
-    print('%s // %s = %s' % (first, second, first // second))
-    print('%s %% %s = %s' % (first, second, first % second))
+    BEGIN, END = lambda: print(color.color('magenta').str()), lambda: print(color.color().str())
+    BEGIN()
+    print('(%s) + (%s) = %s' % (first, second, first + second))
+    print('(%s) - (%s) = %s' % (first, second, first - second))
+    print('(%s) * (%s) = %s' % (first, second, first * second))
+    print('(%s) / (%s) = %s' % (first, second, first / second))
+    if True in [isType(e, _limited['arithmetic']) for e in (first, second)]: return END()
+    #if type(first) in _limited['arithmetic']: return END()
+    #if type(second) in _limited['arithmetic']: return END()
+    print('(%s) // (%s) = %s' % (first, second, first // second))
+    print('(%s) %% (%s) = %s' % (first, second, first % second))
     print('divmod(%s, %s) = %s, %s' % ((first, second) + divmod(first, second)))
+    return END()
 
 def _comparisonTest(first, second):
     'Use all six comparison operations to test'
-    print('%s == %s: %s' % (first, second, first == second))
-    print('%s != %s: %s' % (first, second, first != second))
-    if type(first) in _limited['comparison']: return
-    if type(second) in _limited['comparison']: return
-    print('%s < %s: %s' % (first, second, first < second))
-    print('%s <= %s: %s' % (first, second, first <= second))
-    print('%s > %s: %s' % (first, second, first > second))
-    print('%s >= %s: %s' % (first, second, first >= second))
+    BEGIN, END = lambda: print(color.color('green').str()), lambda: print(color.color().str())
+    BEGIN()
+    print('(%s) == (%s): %s' % (first, second, first == second))
+    print('(%s) != (%s): %s' % (first, second, first != second))
+    if True in [isType(e, _limited['comparison']) for e in (first, second)]: return END()
+    print('(%s) < (%s): %s' % (first, second, first < second))
+    print('(%s) <= (%s): %s' % (first, second, first <= second))
+    print('(%s) > (%s): %s' % (first, second, first > second))
+    print('(%s) >= (%s): %s' % (first, second, first >= second))
+    return END()
 
 def _operatorExistTest(arg):
     'Checks if all necessary operator wrappers are present'
@@ -104,7 +111,6 @@ def _comboTest(first, second):
     _operatorExistTest(first)
     _arithmeticTest(first, second)
     _comparisonTest(first, second)
-    print()
 
 # preparation for parsing command line arguments
 tester = {

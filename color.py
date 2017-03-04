@@ -4,7 +4,11 @@
 # Taken from another repository of my own: Hearts-in-Python
 
 class color:
-    'ANSI Color Escapes'
+    '''
+        Initializes with the attributes of: foreground, background, intenseFore, intenseBack
+        foreground and background should be texts within such:
+            ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white']
+    '''
     _colorDict = {
         'none': 0 # the default value
         , 'black': 30
