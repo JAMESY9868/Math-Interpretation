@@ -46,7 +46,7 @@ def sameType(tpe, *args):
 
 def isType(arg, tpes):
     'Checks if the type of argument is of the type provided in tpes'
-    if not ifIterable(tpes): return NotImplemented if type != type(tpes) else (tpes,)
+    if not ifIterable(tpes): return NotImplemented if type != type(tpes) else isType(arg, (tpes,))
     return type(arg) in tpes
 
 # private section
