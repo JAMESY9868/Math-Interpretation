@@ -110,7 +110,6 @@ def dot(first, second):
 
 def foreach(func, *vects):
     'entry-wise function performance'
-    import pdb; pdb.set_trace()
     if not ifIterable(vects[0]): raise TypeError
     if ifIterable(vects[0][0]): return foreach(*(vects[0]))
     return vector([func(*e) for e in zip(*vects)])
