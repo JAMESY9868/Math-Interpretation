@@ -134,6 +134,9 @@ class decimal:
     def __integer__(self):
         'integer conversion support'
         return integer(self.output()[0])
+    def __comp__(self):
+        'support for comp'
+        raise NotImplementedError('Needs to import comp module')
     
     def output(self):
         '''

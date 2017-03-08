@@ -12,6 +12,15 @@ import mathRegex as mr
 
 import pdb; t = pdb.set_trace
 
+# Comp conversion
+def _decFracComp(self):
+    'decimal/frac to comp conversion'
+    if not isType(self, (decimal, frac)): raise TypeError
+    return comp((self, 0)).cpmode(self)
+
+frac.__comp__ = _decFracComp
+decimal.__comp__ = _decFracComp
+
 class comp:
     def __init__(self, value = None):
         ''
@@ -77,7 +86,8 @@ class comp:
         return self.copy(self)
     def cpmode(self, other):
         'Copy the internal info storage mode for comp from another comp instance'
-        if not isType(other, comp): raise TypeError
+        if not isType(other, (comp, decimal, frac)): raise TypeError
+        if not isType(other, comp): return self.remode(type(other))
         return self.remode(other.MODE)
     
     def conj(self):

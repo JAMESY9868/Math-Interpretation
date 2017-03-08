@@ -124,4 +124,4 @@ def mainTest():
     pass
 
 # Test operation starts
-if '__main__' == __name__: print(test())
+if '__main__' == __name__: test()

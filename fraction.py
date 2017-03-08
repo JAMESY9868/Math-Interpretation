@@ -62,6 +62,9 @@ class frac:
     def __decimal__(self):
         'support for decimal'
         raise NotImplementedError('Needs to import decimal module')
+    def __comp__(self):
+        'support for comp'
+        raise NotImplementedError('Needs to import comp module')
     
     def output(self):
         'Return a tuple consisting of both the numerator and the denominator'

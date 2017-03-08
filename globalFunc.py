@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 # -*- encoding: utf8 -*-
 
+import validation
+
 '''
 Defines the global functions used in MI system
 '''
@@ -13,6 +15,11 @@ def sign(arg):
 def signStr(arg, optPlusSign = False):
     'Gets the sign of the expression with + or -, or if optPlusSign is False (by default), empty string.' 
     return '-' if sign(arg) < 0 else '+' if optPlusSign else ''
+
+def size(arg):
+    'Gets the size of a vector or a matrix'
+    if not hasattr(arg, '__size__'): raise TypeError
+    return arg.__size__()
 
 # the following lines simply serve for the ease of typing, and can/should be ignored.
 alternative = 0; del alternative
