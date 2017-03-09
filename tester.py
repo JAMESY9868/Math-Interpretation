@@ -9,10 +9,8 @@ from sys import argv
 from globalFunc import *
 from validation import *
 
-from integer import *
-from fraction import *
-from decimal import *
-from complex import *
+from mi import *
+
 import cli
 
 import color
@@ -23,9 +21,17 @@ extraArg = {
 }
 
 _limited = {
-    'arithmetic' : (comp,),
-    'comparison' : (comp,),
+    'arithmetic' : (comp, vector),
+    'comparison' : (comp, vector),
 }
+
+all = (
+    (i1, i2),
+    (f1, f2),
+    (d1, d2),
+    (c1, c2),
+    (v1, v2),
+)
 
 def test():
     if 'all' in argv: 
@@ -36,25 +42,40 @@ def test():
         testFrac,
         testDec,
         testComp,
+        testVector,
     )
     return [(print(), print(color.color('yellow').text(func.__name__)), func()) for func in funcs]
 
+def combo(i, ifRemode = False):
+    _comboTest(*[(e if not ifRemode else e.remode(False)) for e in all[i]])
+
 def testInt():
-    _comboTest(i1, i2)
+    combo(0) # integer
 
 def testFrac():
-    _comboTest(f1, f2)
+    combo(1) # frac
 
 def testDec():
-    _comboTest(d1, d2)
+    combo(2) # decimal
 
 def testComp():
-    _comboTest(c1, c2)
-    _comboTest(c1.remode(False), c2.remode(False))
+    combo(3) # comp
+    combo(3, True)
+
+def testVector():
+    _comboTest(v1, v2)
+
+def interTest():
+    pass
+
+_beginEnd = lambda colorStr: (
+    lambda: print(color.color(colorStr).str()),
+    lambda: print(color.color().str()),
+)
 
 def _arithmeticTest(first, second):
     'Use all six arithmetic operations to test'
-    BEGIN, END = lambda: print(color.color('magenta').str()), lambda: print(color.color().str())
+    BEGIN, END = _beginEnd('magenta')
     BEGIN()
     print('(%s) + (%s) = %s' % (first, second, first + second))
     print('(%s) - (%s) = %s' % (first, second, first - second))
@@ -70,7 +91,7 @@ def _arithmeticTest(first, second):
 
 def _comparisonTest(first, second):
     'Use all six comparison operations to test'
-    BEGIN, END = lambda: print(color.color('green').str()), lambda: print(color.color().str())
+    BEGIN, END = _beginEnd('green')
     BEGIN()
     print('(%s) == (%s): %s' % (first, second, first == second))
     print('(%s) != (%s): %s' % (first, second, first != second))

@@ -169,7 +169,7 @@ class frac:
         'built-in A//B support for frac, return integer FLAG: EXPR'
         if not _operatable(other): return NotImplemented
         trueDiv = self / other
-        if trueDiv < 0: return -(-trueDiv) // 1 - 1
+        if trueDiv < 0: return (-1 if -trueDiv % 1 else 0) - (-trueDiv) // 1
         elif trueDiv == 0: return integer(0)
         return integer(trueDiv.output()[0]) // trueDiv.output()[1]
     def __rfloordiv__(self, other):

@@ -97,10 +97,16 @@ class comp:
             for i, sgn in zip(range(2), (1, -1))
         ]).cpmode(self)
     # Arithmetic Operations
-    __unavail = lambda _: NotImplemented # unavailable functions are drawn from here
+    __unavail = lambda *_: NotImplemented # unavailable functions are drawn from here
     
-    'built-in abs support for comp'
-    __abs__ = __unavail
+    'Turn a complex number into a 2-element vector'
+    makeVect = __unavail
+    
+    def __abs__(self):
+        'built-in abs support for comp'
+        vect = self.makeVect()
+        return vect if NotImplemented == vect else abs(vect)
+    
     def __pos__(self):
         'built-in +A support for comp'
         return self
@@ -117,7 +123,7 @@ class comp:
         return comp([
             self.output()[i] + comp(other).output()[i]
             for i in range(2)
-        ])
+        ]).cpmode(self)
     def __radd__(self, other):
         'built-in A+B alternative support for comp'
         return self + other
@@ -138,25 +144,25 @@ class comp:
             self.output()[1] * other.output()[1],
             self.output()[0] * other.output()[1] +
             self.output()[1] * other.output()[0]
-        ])
+        ]).cpmode(self)
     def __rmul__(self, other):
         'built-in A*B alternative support for comp'
-        return comp(other) * self
+        return comp(other).cpmode(self) * self
     
     def __truediv__(self, other):
         'built-in A/B support for comp'
         if not _operatable(other): return NotImplemented
         other = comp(other)
-        if 0 == other.output()[1]: return comp(
+        if 0 != other.output()[1]: return comp(
             (self * other.conj()) / (other * other.conj())
-        )
+        ).cpmode(self)
         return comp([
             self.output()[i] / other.output()[0]
             for i in range(2)
-        ])
+        ]).cpmode(self)
     def __rtruediv__(self, other):
         'built-in A/B alternative support for comp'
-        return comp(other) / self
+        return comp(other).cpmode(self) / self
     
     'built-in A//B support for comp'
     __floordiv__ = __unavail
