@@ -73,7 +73,8 @@ class vector():
     
     def __add__(self, other):
         'built-in A+B support for vector'
-        if not sameType(vector, self, other): raise TypeError
+        if _operatable(other): return foreach(lambda a: a + other, self)
+        if not sameType(vector, self, other): return NotImplemented
         if size(self) != size(other): raise ValueError
         return foreach(lambda a,b:a+b, self, other)
     def __radd__(self, other):
@@ -106,7 +107,7 @@ class vector():
         # This will for now / ever raise TypeError because there is no meaning found for comp // comp. Ideas?
     def __rfloordiv__(self, other):
         'built-in A//B alternative support for vector'
-        return 
+        return NotImplemented
     
     def __truediv__(self, other):
         'built-in A/B support for vector'
@@ -114,6 +115,10 @@ class vector():
         if not sameType(vector, self, other): return NotImplemented
         if size(self) != size(other): raise ValueError
         return foreach(lambda a,b:a/b, self, other)
+    def __rtruediv__(self, other):
+        'built-in A/B alternative support for vector'
+        if _operatable(other): return foreach(lambda b: other / b, self)
+        return NotImplemented
     
     def __mod__(self, other):
         'built-in A%B support for vector'
@@ -121,6 +126,9 @@ class vector():
         if size(self) != size(other): raise ValueError
         return foreach(lambda a,b:a%b, self, other)
         # TypeError. Refer to __floordiv__
+    def __rmod__(self, other):
+        'built-in A%B alternative support for vector'
+        return NotImplemented
     
     def __divmod__(self, other):
         'built-in divmod support for vector'
@@ -128,6 +136,9 @@ class vector():
         if size(self) != size(other): raise ValueError
         return foreach(divmod, self, other)
         # TypeError. Refer to __floordiv__
+    def __rdivmod__(self, other):
+        'built-in divmod alternative support for vector'
+        return NotImplemented
     
 def dot(first, second):
     'global dot multiplication function'

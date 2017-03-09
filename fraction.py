@@ -15,6 +15,7 @@ integerCheck = lambda arg: typeCheck(arg, integer)
 def _intTrueDiv(self, other):
     'A fraction definition of integer trueDiv'
     integerCheck(self)
+    if not _operatable(other): return NotImplemented
     if self % other == 0: return self // other
     return frac(self) / frac(other)
 def _intFrac(self):

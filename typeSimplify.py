@@ -18,6 +18,7 @@ def typeSimplify(arg):
     if integer == tpe: return arg
     if tpe in (frac, decimal): return arg if 0 != arg % 1 else typeSimplify(integer(arg))
     if comp == tpe: return arg if 0 != arg.output()[1] else typeSimplify(arg.output()[0])
+    # goal: simplify comp's internal type
     
 def _operatable(arg):
     ''

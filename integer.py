@@ -172,12 +172,14 @@ class integer:
         return not (self < other)
     def __lt__(self, other):
         'built-in A<B support for integer'
-        if integer != type(other): return self < integer(other)
-        return NotImplemented # force redirect
+        # force redirect
+        if not _operatable(other) or integer == type(other): return NotImplemented
+        return self < integer(other)
     def __le__(self, other):
         'built-in A<=B support for integer'
-        if integer != type(other): return self <= integer(other)
-        return NotImplemented # force redirect
+        # force redirect
+        if not _operatable(other) or integer == type(other): return NotImplemented
+        return self <= integer(other)
 
 def _operatable(arg):
     'take the argument itself'

@@ -217,6 +217,7 @@ class decimal:
     
     def __add__(self, other):
         'built-in A+B support for decimal'
+        if not _operatable(other): return NotImplemented
         return decimal(frac(self) + frac(other))
     def __radd__(self, other):
         'built-in A+B alternative support for decimal'
@@ -231,6 +232,7 @@ class decimal:
     
     def __mul__(self, other):
         'built-in A*B support for decimal'
+        if not _operatable(other): return NotImplemented
         return decimal(frac(self) * frac(other))
     def __rmul__(self, other):
         'built-in A*B alternative support for decimal'
@@ -238,6 +240,7 @@ class decimal:
     
     def __floordiv__(self, other):
         'built-in A//B support for decimal'
+        if not _operatable(other): return NotImplemented
         return decimal(frac(self) // frac(other))
     def __rfloordiv__(self, other):
         'built-in A//B alternative support for decimal'
@@ -245,6 +248,7 @@ class decimal:
     
     def __truediv__(self, other):
         'built-in A/B support for decimal'
+        if not _operatable(other): return NotImplemented
         return decimal(frac(self) / frac(other))
     def __rtruediv__(self, other):
         'built-in A/B alternative support for decimal'
@@ -252,6 +256,7 @@ class decimal:
     
     def __mod__(self, other):
         'built-in A%B suppoort for decimal'
+        if not _operatable(other): return NotImplemented
         return decimal(frac(self) % frac(other))
     def __rmod__(self, other):
         'built-in A%B alternative support for decimal'
@@ -280,12 +285,12 @@ class decimal:
         return not (self < other)
     def __lt__(self, other):
         'built-in support of A<B'
-        if type(other) != decimal: return self < decimal(other)
-        return NotImplemented # call __gt__
+        if not _operatable(other) or decimal == type(other): return NotImplemented
+        return self < decimal(other)
     def __le__(self, other):
         'built-in support of A<=B'
-        if type(other) != decimal: return self <= decimal(other)
-        return NotImplemented # call __ge__
+        if not _operatable(other) or decimal == type(other): return NotImplemented
+        return self <= decimal(other)
 
 def _operatable(arg):
     'Checks if the argument is operatable'

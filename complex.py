@@ -17,9 +17,13 @@ def _decFracComp(self):
     'decimal/frac to comp conversion'
     if not isType(self, (decimal, frac)): raise TypeError
     return comp((self, 0)).cpmode(self)
+def _intComp(self):
+    'integer to comp conversion'
+    return comp(frac(self))
 
 frac.__comp__ = _decFracComp
 decimal.__comp__ = _decFracComp
+integer.__comp__ = _intComp
 
 class comp:
     def __init__(self, value = None):
@@ -139,6 +143,7 @@ class comp:
     def __mul__(self, other):
         'built-in A*B support for comp'
         if not _operatable(other): return NotImplemented
+        other = comp(other)
         return comp([
             self.output()[0] * other.output()[0] -
             self.output()[1] * other.output()[1],

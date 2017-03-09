@@ -34,6 +34,8 @@ all = (
 )
 
 def test():
+    if 'quiet' in argv: # quiet mode
+        global print; print = lambda *_: None
     if 'all' in argv: 
         extraArg['oper'] = True
     if 'oper' in argv: extraArg['oper'] = True
@@ -43,6 +45,8 @@ def test():
         testDec,
         testComp,
         testVector,
+        
+        interTest,
     )
     return [(print(), print(color.color('yellow').text(func.__name__)), func()) for func in funcs]
 
@@ -66,7 +70,11 @@ def testVector():
     _comboTest(v1, v2)
 
 def interTest():
-    pass
+    l = len(all)
+    for i in range(l):
+        for j in range(i, l):
+            for n in range(2):
+                _comboTest(*((all[i][n], all[j][n])[::[1, -1][n]]))
 
 _beginEnd = lambda colorStr: (
     lambda: print(color.color(colorStr).str()),
