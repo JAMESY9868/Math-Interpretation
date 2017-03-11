@@ -14,7 +14,7 @@ from re import match
 _DEFAULT_TYPE = int # the default type of value held inside the class
 
 class integer:
-    def __init__(self, value = None):
+    def __init__(self, value = None, **extra):
         # Default init
         self.input(0)
         # Conversion init
@@ -153,7 +153,12 @@ class integer:
         return integer(self.output() ** integer(other).output())
     def __rpow__(self, other):
         'builtin alternative A**B support for integer'
-        return integer(other) ** self
+        return NotImplemented
+        return (
+            1 if 0 == self else
+            (other ** (self - 1)) * other if 0 < self else
+            (other ** (self + 1)) / other
+        )
     
     ## Conparison Operators
     def __eq__(self, other):
@@ -180,19 +185,21 @@ class integer:
         # force redirect
         if not _operatable(other) or integer == type(other): return NotImplemented
         return self <= integer(other)
+    # OPERATABILITY
+    @staticmethod
+    def __operatable(arg):
+        'take the argument itself'
+        tpes = (
+            # Builtin types
+            int,
+            float,
+            str,
+            # MI types
+            integer,
+        )
+        return type(arg) in tpes
 
-def _operatable(arg):
-    'take the argument itself'
-    tpes = (
-        # Builtin types
-        int,
-        float,
-        str,
-        # MI types
-        integer,
-    )
-    return type(arg) in tpes
-    
+_operatable = integer._integer__operatable
 
 # TEST AREA
 i1 = integer(2)

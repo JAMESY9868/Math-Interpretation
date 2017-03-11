@@ -29,7 +29,7 @@ integer.__frac__ = _intFrac
 _DEFAULT_TYPE = integer # the default type of numerator and denominator
 
 class frac:
-    def __init__(self, value = None):
+    def __init__(self, value = None, **extra):
         # Default value
         self.input((0, 1))
         # Conversion init
@@ -235,21 +235,24 @@ class frac:
         'built-in A<=B support for frac FLAG: EXPR'
         if type(other) != frac: return self <= frac(other)
         return NotImplemented # force to load __ge__
-        
+    # OPERATABILITY
+    @staticmethod
+    def __operatable(arg):
+        'take the argument itself'
+        tpes = (
+            # Builtin types
+            int,
+            float,
+            str,
+            # MI types
+            integer,
+            frac,
+        )
+        return type(arg) in tpes
+
 frac._inputable += (frac,)
 
-def _operatable(arg):
-    'take the argument itself'
-    tpes = (
-        # Builtin types
-        int,
-        float,
-        str,
-        # MI types
-        integer,
-        frac,
-    )
-    return type(arg) in tpes
+_operatable = frac._frac__operatable
 
 # TEST AREA
 f1 = frac((1, 8))

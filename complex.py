@@ -26,7 +26,7 @@ decimal.__comp__ = _decFracComp
 integer.__comp__ = _intComp
 
 class comp:
-    def __init__(self, value = None):
+    def __init__(self, value = None, **extra):
         ''
         self.MODE = decimal
         # Default init
@@ -204,18 +204,22 @@ class comp:
     __lt__ = __unavail
     'built-in A<=B support for comp'
     __le__ = __unavail
+    # OPERATABILITY
+    @staticmethod
+    def __operatable(arg):
+        tpes = (
+            int,
+            float,
+            str,
+            integer,
+            frac,
+            decimal,
+            comp,
+        )
+        return type(arg) in tpes
 
-def _operatable(arg):
-    tpes = (
-        int, 
-        float,
-        str,
-        integer,
-        frac,
-        decimal,
-        comp,
-    )
-    return type(arg) in tpes
+_operatable = comp._comp__operatable
 
+# Test Area
 c1 = comp((1, -2))
 c2 = comp(('1.2_3', '9'))

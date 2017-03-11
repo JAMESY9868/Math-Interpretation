@@ -30,7 +30,7 @@ def _fracDec(self):
     alpha, beta = [primePow(outStr[1], i) for i in (2, 5)] # power of 2 | 5 in the denominator
     nonRepeatNum = max(alpha, beta) # The non-repeating part of the decimal
     n_0 = integer(outStr[1]) / integer(2) ** alpha / integer(5) ** beta
-    ind = integer(1)
+    ind = 1 # it seems that currently integer.__rpow__ is not working so fall back to int
     while n_0 > 1:
         if 1 == (10 ** ind) % n_0: break
         ind += 1
@@ -58,20 +58,20 @@ integer.__decimal__ = _intDec
 _DEFAULT_TYPE = (integer, str, str)
 
 class decimal:
-    def __init__(self, value = None):
-        '''
-        input for decimal [does not support irregular infinite decimal]:
-        possible types:
-        1. str matching /^-?\d*(\d|\.\d*(_\d+)?)$/
-            /^\d+$/ integer-like, '1'
-            /^\d*\.\d+$/ finite decimal '1.' or '1.2'
-            /^\d*\.\d*_\d+$ repeating infinite decimal '1.2_3', '1._3', where '_' represents the starting point of the repeating part
-        2. decimal value
-        3. frac value
-        4. integer value
-        5. iterable object with type (A, [str, [str]]) where A can be converted to integer
-        6. int, float
-        '''
+    '''
+    input for decimal [does not support irregular infinite decimal]:
+    possible types:
+    1. str matching /^-?\d*(\d|\.\d*(_\d+)?)$/
+        /^\d+$/ integer-like, '1'
+        /^\d*\.\d+$/ finite decimal '1.' or '1.2'
+        /^\d*\.\d*_\d+$ repeating infinite decimal '1.2_3', '1._3', where '_' represents the starting point of the repeating part
+    2. decimal value
+    3. frac value
+    4. integer value
+    5. iterable object with type (A, [str, [str]]) where A can be converted to integer
+    6. int, float
+    '''
+    def __init__(self, value = None, **extra):
         # Fields with default values
         self.input((0, '', '')) # Default type: integer, str, str
         # Conversion init
@@ -291,18 +291,21 @@ class decimal:
         'built-in support of A<=B'
         if not _operatable(other) or decimal == type(other): return NotImplemented
         return self <= decimal(other)
+    # OPERATABILITY
+    @staticmethod
+    def __operatable(arg):
+        'Checks if the argument is operatable'
+        tpes = (
+            int,
+            float,
+            str,
+            integer,
+            frac,
+            decimal,
+        )
+        return type(arg) in tpes
 
-def _operatable(arg):
-    'Checks if the argument is operatable'
-    tpes = (
-        int,
-        float,
-        str,
-        integer,
-        frac,
-        decimal,
-    )
-    return type(arg) in tpes
+_operatable = decimal._decimal__operatable
 
 # TEST AREA
 d1 = decimal('1.2_3')

@@ -4,11 +4,22 @@
 from globalFunc import *
 from validation import *
 
-from complex import *
+from mi import *
 
-class vector():
-    def __init__(self, value = None):
+# comp's toVector fnuction
+def _compToVect(self):
+    'Comp turned into a 2-elem vector'
+    if not isType(self, comp): raise TypeError
+    return vector(self.output())
+comp.makeVect = _compToVect
+
+class vector:
+    def __init__(self, value = None, **extra):
         ''
+        self.displayMode = decimal
+        self.realComp = comp
+        self.ifComp = False
+        # Default value
         self.input((0,))
         if value is not None:
             if not ifIterable(value): raise NotImplementedError
@@ -17,13 +28,13 @@ class vector():
     def __vector__(self):
         'support for vector'
         return self
-    
     def __str__(self):
         'built-in str support for vector'
         return 'vector(%s)' % (self.output(),)
     def __repr__(self):
         'built-in repr support for vector'
         return str(self)
+    
     def __iter__(self):
         'built-in iter support for vector'
         return iter(self.output()) # for now, probably needs modification
@@ -43,8 +54,11 @@ class vector():
         pass
     
     def normalize(self):
-        ''
+        'Returns a multiple of self, with all elements adding up to 1'
         return self / sum(self)
+    def unit(self):
+        'Returns a multiple of self, with all elements whose squares add up to 1'
+        return self / abs(self)
     
     def __len__(self):
         'built-in len support for vector'
@@ -159,6 +173,10 @@ def foreach(func, *vects):
         vects[:argLen]
     )
     return vector([func(*e) for e in zip(*vects)])
+
+def vZeros(length):
+    ''
+    return vector((0,) * (length if int == type(length) else integer(length).output()))
 
 def _operatable(arg):
     ''
