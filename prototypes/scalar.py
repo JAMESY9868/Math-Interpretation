@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # -*- encoding: utf8 -*-
 
+# for ease of editor autocompletion. Please ignore the next line.
 Prototype='';function='';alternative='';support='';built=''
 
 class scalar:
