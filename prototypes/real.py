@@ -4,5 +4,5 @@
 from scalar import *
 
 class real(scalar):
-    'This is a prototype class for real numbers'
+    'This is a REAL prototype class'
     pass

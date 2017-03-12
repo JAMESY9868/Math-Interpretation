@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 # -*- encoding: utf8 -*-
 
+from prototypes.scalar import scalar
+
 from integer import *
 from fraction import *
 from decimal import *
@@ -25,7 +27,7 @@ frac.__comp__ = _decFracComp
 decimal.__comp__ = _decFracComp
 integer.__comp__ = _intComp
 
-class comp:
+class comp(scalar):
     def __init__(self, value = None, **extra):
         ''
         self.MODE = decimal

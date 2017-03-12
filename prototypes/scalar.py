@@ -4,7 +4,7 @@
 Prototype='';function='';alternative='';support='';built=''
 
 class scalar:
-    'This is a prototype class'
+    'This is a SCALAR prototype class'
     # Defines all the properties and methods for a scalar.
     __unavail = lambda *_, **__: NotImplemented
     __done = lambda *_, **__: None

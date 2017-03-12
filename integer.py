@@ -6,6 +6,8 @@
 # with customized methods connecting to other objects
 #
 
+from prototypes.rational import rational
+
 from globalFunc import *
 from validation import *
 
@@ -13,7 +15,7 @@ from re import match
 
 _DEFAULT_TYPE = int # the default type of value held inside the class
 
-class integer:
+class integer(rational):
     def __init__(self, value = None, **extra):
         # Default init
         self.input(0)

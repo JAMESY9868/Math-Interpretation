@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 # -*- encoding: utf8 -*-
 
+from prototypes.rational import rational
+
 from globalFunc import *
 from validation import *
 from validation import _isZero as isZero
@@ -57,7 +59,7 @@ integer.__decimal__ = _intDec
 
 _DEFAULT_TYPE = (integer, str, str)
 
-class decimal:
+class decimal(rational):
     '''
     input for decimal [does not support irregular infinite decimal]:
     possible types:

@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 # -*- encoding: utf8 -*-
 
+from prototypes.rational import rational
+
 from globalFunc import *
 from validation import *
 
@@ -28,7 +30,7 @@ integer.__frac__ = _intFrac
 
 _DEFAULT_TYPE = integer # the default type of numerator and denominator
 
-class frac:
+class frac(rational):
     def __init__(self, value = None, **extra):
         # Default value
         self.input((0, 1))
